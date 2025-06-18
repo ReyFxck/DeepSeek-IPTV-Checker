@@ -34,7 +34,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull r
 
 ## Licença
 
-Este projeto é distribuído sob a licença MIT.
+Este projeto é distribuído sob a licença MIT Caso queira Leia-me: [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Autor
 
