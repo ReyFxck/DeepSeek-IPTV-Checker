@@ -1,24 +1,40 @@
-# DeepSeek IPTV Checker py [BETA 4]
+# DEEPSEEK IPTV CHECKER PY [ BETA 5 REV 1 ]
 
-Está é uma ferramenta poderosa que verifica contas de iptv xui, xtream com força-bruta
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/DeepSeek_logo.svg" alt="DeepSeek Logo" width="500" height="100">
+</p>
 
-🔧 Características:
-- Suporte a alguns dispositivos.
-- Suporte a combos.
-- Suporte a proxys:
-• Socks4, Socks5, HTTP e HTTPS
-- Lógica para teste de proxy inteligente.
-- Reutilização de proxys inteligente.
-- Tabela de informações agradavel (em desenvolvimento).
-- Salvamento de Hits inteligente!
 
-⚠️ BUGS CONHECIDOS:
-- Proxys problemáticas podem fazer debugs indesejáveis e podem prejudicar o escaneamento.
-- Algumas vezes o scan pulará um usuário e senha oor conta de falha no servidor. 
-- problemas com decoração podem aparecer .
-- Salvamento não está 100%
-- alguns servidores podem travar a script caso for https puro...
+## Essa é uma ferramenta poderosa e gratuita desenvolvida em Python para verificar a validade de contas IPTV educacionalmente. Ele permite testar listas de usuários e senhas (combos) contra servidores IPTV, com suporte opcional a diferentes tipos de proxy para maior flexibilidade e anonimato. Os resultados são categorizados em contas válidas (Hits), inválidas (Bad) e banidas (Ban), sendo salvos em arquivos organizados.
 
-❓ Sobre esta script:
+## Funcionalidades
 
-Essa script foi feita por fins educacionais, não sou responsável pelo o que você faz, ela foi feita para testar em seu servidor a fins de pentest.
+- **Verificação de Contas IPTV:** Testa a autenticidade de credenciais de acesso a servidores IPTV.
+- **Suporte a Proxies:** Compatível com proxies HTTP/HTTPS, SOCKS4 e SOCKS5 para contornar bloqueios e manter o anonimato.
+- **Processamento Multithread:** Utiliza múltiplos 
+
+
+bots (threads) para processar combos de forma eficiente.
+- **Gerenciamento de Idiomas:** Suporte a múltiplos idiomas para uma experiência de usuário localizada.
+- **Configuração de Sistema Operacional:** Adapta os caminhos de salvamento de arquivos com base no sistema operacional (Windows, Linux, Android, macOS, iOS).
+- **Relatórios Detalhados:** Salva contas válidas (Hits) em arquivos `.txt` com informações detalhadas como status, data de expiração, conexões ativas e máximas.
+- **Interface Amigável:** Exibe informações em tempo real sobre o progresso da verificação, incluindo contadores de Hits, Bads e Bans.
+
+## Avisos Legais
+
+Esta ferramenta é **EDUCACIONAL** e foi desenvolvida para fins de estudo e pesquisa. O autor não se responsabiliza por qualquer uso indevido ou ilegal do script. É **PROIBIDA A VENDA** deste script.
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests no repositório do GitHub.
+
+## Licença
+
+Este projeto é distribuído sob a licença MIT.
+
+## Autor
+
+**Thomas R.**
+
+-   Telegram: `@ReyFxck`
+-   GitHub: [ReyFxck](https://github.com/ReyFxck)
