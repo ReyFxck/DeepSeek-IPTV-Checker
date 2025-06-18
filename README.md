@@ -24,6 +24,10 @@ bots (threads) para processar combos de forma eficiente.
 
 Esta ferramenta é **EDUCACIONAL** e foi desenvolvida para fins de estudo e pesquisa. O autor não se responsabiliza por qualquer uso indevido ou ilegal do script. É **PROIBIDA A VENDA** deste script.
 
+## Bugs e Soluções
+
+Caso esteja com problemas com essa ferramenta veja essa página [AQUI](https://github.com/ReyFxck/DeepSeek-IPTV-Checker/blob/main/Fix_Bugs.md)
+
 ## Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests no repositório do GitHub.
