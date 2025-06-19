@@ -5,7 +5,7 @@ Para utilizar o script via termux/linux, siga os passos abaixo:
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/ReyFxck/DeepSeek-IPTV-Checker.git
-    cd DS_ULTRA V5
+    cd DeepSeek-IPTV-Checker
     ```
 
 2.  **Instale as dependências:**
