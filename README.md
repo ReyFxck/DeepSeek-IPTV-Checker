@@ -28,6 +28,10 @@ Esta ferramenta é **EDUCACIONAL** e foi desenvolvida para fins de estudo e pesq
 
 Caso esteja com problemas com essa ferramenta veja essa página [AQUI](https://github.com/ReyFxck/DeepSeek-IPTV-Checker/blob/main/Fix_Bugs.md)
 
+## Como Usar
+
+Aqui você pode ler e coomprender como instala essa ferramenta no Android, Termux/Linux e em outros dispositivos [LEIA-ME](https://github.com/ReyFxck/DeepSeek-IPTV-Checker/blob/main/How_to_use.md)
+
 ## Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests no repositório do GitHub.
