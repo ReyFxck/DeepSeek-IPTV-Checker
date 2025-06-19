@@ -1,0 +1,71 @@
+{
+  "translations": {
+    "traduce": {
+      "traduce_json": "TG @TrainAgain",
+      "traduce_hit": "Script Traducido por TrainAgain"
+    },
+    "questions": {
+      "yes": "SÍ",
+      "no": "NO",
+      "select_language": "Seleccione un nuevo idioma:",
+      "confirm_proxy": "¿Desea usar archivos de proxy?",
+      "proxy_type": "Elija el tipo de proxy de\n  acuerdo con su archivo proxy",
+      "number_of_bots": "Digite el número de bots",
+      "server_host": "Digite el host del servidor\n  Y por favor verifique si está\n  en línea y funcionando",
+      "select_combo_file": "Elija el archivo de combo",
+      "select_proxy_file": "Elija el archivo de proxy",
+      "about_combo": "Combo es un archivo de texto\n  lleno de combinaciones (user:pass)",
+      "about_proxy": "Proxy es una ip virtual\n  que está alojada en\n  un país específico",
+      "error_question_proxy": "Elección inválida.\n  Digite 1 para Sí\n  Digite 2 para No\n  ¡Inténtelo de nuevo!",
+      "error_type_proxy": "¡La elección está incorrecta!\n  Tipo de proxy inválido."
+    },
+    "responses": {
+      "response": "Respuesta",
+      "invalid_host": "¡¡¡El Host está inválido!!!\n  Favor intente nuevamente",
+      "invalid_option": "¡esa es una opción inválida!\n  ¡Por favor intente nuevamente!",
+      "invalid_type_proxy": "Tipo de proxy elegido inválido\n  Intente nuevamente más tarde.",
+      "system_not_suported": "¡Sistema operativo no soportado!",
+      "creating_folder_combo": "La carpeta Combo no existe. Creando...:",
+      "file_not_found": "¡Ningún archivo encontrado en la carpeta Combo!",
+      "invalid_choice": "Elección inválida.",
+      "invalid_input": "Entrada inválida.\n  Digite un número.",
+      "error_saving_file": "Error al guardar el archivo:",
+      "invalid_number_of_bots": "Número de bots inválido. Debe ser al menos 1.",
+      "invalid_input_number": "Entrada inválida. Digite un número.",
+      "removing_invalid_lines": "Eliminando {linhas_invalidas} líneas inválidas.",
+      "no_valid_combo_found": "Ningún combo válido encontrado en el archivo.",
+      "critical_error": "ERROR CRÍTICO: {e}"
+    },
+    "menu": {
+      "choose_option": "¡Favor haga una elección!",
+      "main_title": "MENÚ PRINCIPAL",
+      "menu_start": "INICIAR CHECKER SCAN",
+      "settings": "CONFIGURACIONES GLOBALES",
+      "exit_script": "CERRAR SCRIPT",
+      "settings_title": "CONFIGURACIONES",
+      "change_language": "Cambiar idioma",
+      "change_system": "Cambiar sistema operativo",
+      "save_and_exit": "Guardar y volver",
+      "exit_info1": "Saliendo. Recuerde: Esta es una herramienta educacional",
+      "exit_info2": "¡Gracias por usar el script DEEPSEEK IPTV CHECKER PY!",
+      "exit_info3": "Script python hecho con fines educativos por @ReyFxck",
+      "exit_info4": "¡¡¡Si compró este script fue engañado!!!",
+      "exit_message_1": "Gracias por usar la py, ¡vuelva siempre! Config by DeepSeek y @ReyFxck"
+    },
+    "checker": {
+      "status": "ESTADO",
+      "user": "USUARIO",
+      "password": "CONTRASEÑA",
+      "host": "HOST",
+      "expiration": "EXP",
+      "created_at": "CREADO",
+      "connections": "CONN",
+      "timezone": "ZONA HORARIA",
+      "trial": "PRUEBA",
+      "unlimited_time": "¡ILIMITADO!",
+      "message": "MENSAJE",
+      "active_connections": "ACT",
+      "max_connections": "MÁX"
+    }
+  }
+}
