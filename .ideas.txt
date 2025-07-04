@@ -1,0 +1,13 @@
+ReyFxck e comunidade ideias ...
+
+- Adicionar Categorias canais ao vivo [OK]*
+* Adionar para filmes e séries.
+
+- Adionar quantidade de canais total por mdsouza [NOT]*
+* Não adicionado.
+
+- adicionar configurações extras categorias [-OK]*
+* Falta muitas coisas extras.
+
+- Corrigir Unido, Empilhado categorias [OK]*
+* Corrigido e adionado e testado.

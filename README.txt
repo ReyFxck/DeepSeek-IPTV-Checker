@@ -25,6 +25,9 @@ Este projeto foi feito por Thomas Reis. Tg: @ReyFxck
 @TrainAgain:  Traducción español
 @ReyFxck:  [Dono] All..
 
+[ ! ] IPTV GRUPO TELEGRAM:
+https://t.me/+1pQYqHrSa-VlZWYx
+
 [ ? ] Qualquer dúvida sobre esta script vá no GitHub:
 https://github.com/ReyFxck/DeepSeek-IPTV-Checker
 
