@@ -1,4 +1,24 @@
-## Instalação
+## Instalação Pydroid (Android)
+
+Para utilizar o script via Pydroid siga os passos abaixo:
+
+1. Baixe a versão da script você pode clicar aqui para [BAIXAR](https://github.com/ReyFxck/DeepSeek-IPTV-Checker/releases/), ou conferir manualmente nos Releases.
+
+2. Baixe a versão mais recente do Pydroid clicando [AQUI](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3)
+
+3. Extrai-a o Zip para obter a pasta "DS ULTRA" você também pode opcionalmente mover essa pasta para onde quiser.
+
+4. Abra o pydroid e Clique em "🗂️" Selecione "OPEN" e no método para abrir arquivos use "Internal Storage" jamais use "~Storage Access Framework~" pois nessa opção irá ocorrer o erro da Script não reconhecer varios sub arquivos ja que esse método é para arquivo aberto temporariamente, depois disso selecione o arquivo py dentro da pasta "DS ULTRA" e execute-a.
+
+5. Caso for a primeira vez aberta a script pedirá que você instale as bibliotecas necessarias, volte a tela de início do Pydroid clique nos três riscos e podera instalar de duas maneiras:
+
+• Método botão "Pip" - escreva o nome da biblioteca qie ele esta pedindo, ex: requests[socks]**
+
+• Método botão "Terminal" - clique no terminal e faça o que o script pediu anteriormente coloque o comando para instalar a biblioteca, Ex: pip install requests[socks]
+
+** Obs esse método não necessita instalar outro apk para plugin, basta desmarcar a opção "use prebuilt libaries repository"
+
+## Instalação Termux (Android)
 
 Para utilizar o script via termux/linux, siga os passos abaixo:
 
