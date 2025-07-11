@@ -17,7 +17,8 @@
       "about_combo": "Combo is a text file\n  with (user:pass)",
       "about_proxy": "Proxy os a virtual ip\n  located in a\n  specific country",
       "error_question_proxy": "Inválido Choice.\n  for Yes write 1\n  for Not write 2\n  Try again!",
-      "error_type_proxy": "Invalid Choice!\n  Invalid Proxy Type!"
+      "error_type_proxy": "Invalid Choice!\n  Invalid Proxy Type!",
+      "show_categories": "Do you want to show available categories for valid accounts?"
     },
     "responses": {
       "response": "reply",
@@ -50,7 +51,12 @@
       "exit_info2": "Thx for use DEEPSEEK IPTV CHECKER PY!",
       "exit_info3": "Code developed for educational use by @ReyFxck",
       "exit_info4": "IF YOU BUY THIS PROGRAM... CONGRATULATIONS, YOU WERE SCAMMED!!!",
-      "exit_message_1": "Thanks for use this py program, come back! Config by DeepSeek e @ReyFxck"
+      "exit_message_1": "Thanks for use this py program, come back! Config by DeepSeek e @ReyFxck",
+      "categoria_title": "CATEGORY SETTINGS",
+      "categoria_estilo": "Configure style",
+      "categoria_menu": "Configure categories",
+      "categoria_empilhado": "[STACKED]",
+      "categoria_unido": "[UNITED]"
     },
     "checker": {
       "status": "STATUS",
@@ -65,7 +71,8 @@
       "unlimited_time": "UNLIMITED!",
       "message": "MESSAGE",
       "active_connections": "ACT",
-      "max_connections": "MAX"
+      "max_connections": "MAX",
+      "m3u_link": "M3U Link"
     }
   }
 }
