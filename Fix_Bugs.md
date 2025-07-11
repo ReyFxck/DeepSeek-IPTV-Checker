@@ -34,3 +34,9 @@ Solução:
 
 [?] O Status está aparecendo um erro grande, e está muito rápido a script:
 * Geralmente é erro no servidor, verifique se este servidor está online e é de iptv.
+
+[?] O script está com palavras estranhas:
+* Verifique se você escolheu a sua lingua corretamente, verifique se o arquivo json está vazio ou foi danificado (caso estiver assim por exemplo response.responses significa que o json não foi escolhido ou está danificado como dito anteriormente)
+
+[?] Os Proxys não funciona:
+* Caso estiver como problemas na aoi de Proxy online e estiver com erros verifique seu ip, caso todas aa Proxys não foram escaneadas e checadas corretamente verifique se essas Proxys são muito antigas
