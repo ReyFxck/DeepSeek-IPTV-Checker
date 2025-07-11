@@ -22,8 +22,12 @@ Este projeto foi feito por Thomas Reis. Tg: @ReyFxck
 
 [ ! ] CONTRIBUIÇÃO:
 @Authentic_Hell:  English Translation
-@TrainAgain:  Traducción español
+@TrainAgain:  Traducción español, Beta tester
 @ReyFxck:  [Dono] All..
+@MdSouza: Beta tester
+
+[ ! ] IPTV GRUPO TELEGRAM:
+https://t.me/+1pQYqHrSa-VlZWYx
 
 [ ? ] Qualquer dúvida sobre esta script vá no GitHub:
 https://github.com/ReyFxck/DeepSeek-IPTV-Checker

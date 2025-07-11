@@ -1,0 +1,37 @@
+ReyFxck e comunidade, ideias ...
+
+- Adicionar Categorias canais ao vivo [OK]*
+* Adionar para filmes e séries.
+
+- Adionar quantidade de canais total por mdsouza [NOT]*
+* Não adicionado.
+
+- adicionar configurações extras categorias [-OK]*
+* Falta muitas coisas extras.
+
+- Corrigir Unido, Empilhado categorias [OK]*
+* Corrigido e adionado e testado.
+
+- Consertar "pisca-pisca" enquanto checa as contas [OK]
+
+- Adicionar todas traduções nos json's [OK]*
+* BETA 5 rev 4-5
+
+- Consertar tabela da checagem [NOT]*
+* Estou com preguiça kkkkk.
+
+- Consertar coloração [+/-]*
+* 50% consertado.
+
+- Corrigir banners [OK 80%]
+
+- Adicionar proxy api grátis [OK]*
+* Testado 20% por ReyFxck e TrainAgain
+
+- Atualizar os MarkDowns para explicar como usar em outras plataformas [+/-]*
+* Está sendo explicado apenas para termux por enquanto.
+
+- Colocar combo api online também [NOT]*
+- 10% por pedaço de código por TrainAgain.
+
+- Adicionar meu combo on-line também [** SEM o CÓDIGO do ARGUMENTO ANTERIOR **]

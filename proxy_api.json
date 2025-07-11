@@ -1,0 +1,59 @@
+{
+    "ProxyScrape Free HTTP": {
+        "url": "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=http&proxy_format=ipport&format=text&timeout=20000",
+        "type": 1,
+        "display_name": "ProxyScrape Free [HTTP]"
+    },
+    "ProxyScrape Free SOCKS4": {
+        "url": "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=socks4&proxy_format=ipport&format=text&timeout=20000",
+        "type": 2,
+        "display_name": "ProxyScrape Free [SOCKS4]"
+    },
+    "ProxyScrape Free SOCKS5": {
+        "url": "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=socks5&proxy_format=ipport&format=text&timeout=20000",
+        "type": 3,
+        "display_name": "ProxyScrape Free [SOCKS5]"
+    },
+    "ProxyList Free HTTP": {
+        "url": "https://www.proxy-list.download/api/v1/get?type=http",
+        "type": 1,
+        "display_name": "Proxy-List Free [HTTP]"
+    },
+    "ProxyList Free SOCKS4": {
+        "url": "https://www.proxy-list.download/api/v1/get?type=socks4",
+        "type": 2,
+        "display_name": "Proxy-List Free [SOCKS4]"
+    },
+    "ProxyList Free SOCKS5": {
+        "url": "https://www.proxy-list.download/api/v1/get?type=socks5",
+        "type": 3,
+        "display_name": "Proxy-List Free [SOCKS5]"
+    },
+    "ProxyFly Free HTTP": {
+        "url": "https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/http/data.txt",
+        "type": 1,
+        "display_name": "ProxiFly GitHub [HTTP]",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        },
+        "clean_protocol": true
+    },
+    "ProxyFly Free SOCKS4": {
+        "url": "https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks4/data.txt",
+        "type": 2,
+        "display_name": "ProxiFly GitHub [SOCKS4]",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        },
+        "clean_protocol": true
+    },
+    "ProxyFly Free SOCKS5": {
+        "url": "https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks5/data.txt",
+        "type": 3,
+        "display_name": "ProxiFly GitHub [SOCKS5]",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        },
+        "clean_protocol": true
+    }
+}
