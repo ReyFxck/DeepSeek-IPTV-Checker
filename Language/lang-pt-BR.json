@@ -17,7 +17,8 @@
       "about_combo": "Combo é um arquivo de texto\n  cheio de combinações (user:pass)",
       "about_proxy": "Proxy é um ip virtual\n  que está hospedado em\n  um país específico",
       "error_question_proxy": "Escolha inválida.\n  Digite 1 para Sim\n  Digite 2 para Não\n  Tente novamente!",
-      "error_type_proxy": "Escolha está incorreta!\n  Tipo de proxy inválido."
+      "error_type_proxy": "Escolha está incorreta!\n  Tipo de proxy inválido.",
+    "show_categories": "Deseja mostrar as categorias disponíveis para contas válidas?"
     },
     "responses": {
       "response": "Resposta",
@@ -46,6 +47,11 @@
       "change_language": "Alterar idioma",
       "change_system": "Alterar sistema operacional",
       "save_and_exit": "Salvar e voltar",
+      "categoria_title": "CONFIGURAÇÃO DE CATEGORIAS",
+      "categoria_estilo": "Configurar estilo",
+      "categoria_menu": "Configurar categorias",
+      "categoria_empilhado": "[EMPILHADO]",
+      "categoria_unido": "[UNIDO]",
       "exit_info1": "Saindo. Lembre-se: Esta é uma ferramenta educacional",
       "exit_info2": "Obrigado por usar o script DEEPSEEK IPTV CHECKER PY!",
       "exit_info3": "Script python feita com fins educativos por @ReyFxck",
@@ -65,7 +71,8 @@
       "unlimited_time": "ILIMITADO!",
       "message": "MESSAGE",
       "active_connections": "ACT",
-      "max_connections": "MAX"
+      "max_connections": "MAX",
+      "m3u_link": "Link M3U"
     }
   }
 }
