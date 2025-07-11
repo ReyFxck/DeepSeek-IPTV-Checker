@@ -17,7 +17,8 @@
       "about_combo": "Combo es un archivo de texto\n  lleno de combinaciones (user:pass)",
       "about_proxy": "Proxy es una ip virtual\n  que está alojada en\n  un país específico",
       "error_question_proxy": "Elección inválida.\n  Digite 1 para Sí\n  Digite 2 para No\n  ¡Inténtelo de nuevo!",
-      "error_type_proxy": "¡La elección está incorrecta!\n  Tipo de proxy inválido."
+      "error_type_proxy": "¡La elección está incorrecta!\n  Tipo de proxy inválido.",
+      "show_categories": "¿Desea mostrar las categorías disponibles para cuentas válidas?"
     },
     "responses": {
       "response": "Respuesta",
@@ -50,7 +51,12 @@
       "exit_info2": "¡Gracias por usar el script DEEPSEEK IPTV CHECKER PY!",
       "exit_info3": "Script python hecho con fines educativos por @ReyFxck",
       "exit_info4": "¡¡¡Si compró este script fue engañado!!!",
-      "exit_message_1": "Gracias por usar la py, ¡vuelva siempre! Config by DeepSeek y @ReyFxck"
+      "exit_message_1": "Gracias por usar la py, ¡vuelva siempre! Config by DeepSeek y @ReyFxck",
+      "categoria_title": "CONFIGURACIÓN DE CATEGORÍAS",
+      "categoria_estilo": "Configurar estilo",
+      "categoria_menu": "Configurar categorías",
+      "categoria_empilhado": "[APILADO]",
+      "categoria_unido": "[UNIDO]"
     },
     "checker": {
       "status": "ESTADO",
@@ -65,7 +71,8 @@
       "unlimited_time": "¡ILIMITADO!",
       "message": "MENSAJE",
       "active_connections": "ACT",
-      "max_connections": "MÁX"
+      "max_connections": "MÁX",
+      "m3u_link": "Link M3U"
     }
   }
 }
