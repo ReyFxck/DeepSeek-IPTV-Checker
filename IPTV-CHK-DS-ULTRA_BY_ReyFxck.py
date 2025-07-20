@@ -1,23 +1,24 @@
 """
+DEEPSEEK IPTV CHECKER VERSION - 6 REV - 1
 PY CONFIG BY Thomas R., Telegram: @ReyFxck
 FEITO PARA AJUDAR QUEM PRECISA E DE GRAÇA!
 GITHUB: https://github.com/ReyFxck/DeepSeek-IPTV-Checker
 FERRAMENTA EDUCACIONAL NÃO USE PARA O MAL
 PROIBIDO A VENDA DESTE SCRIPT!
 
-    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⡿⠿⢿⣿⣿⣿⣿⣿⣿
-    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠉⠉⠉⠙⠻⣅⠀⠈⢧⠀⠈⠛⠉⠉⢻⣿⣿
-    ⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⣤⡶⠟⠀⠀⣈⠓⢤⣶⡶⠿⠛⠻⣿
-    ⣿⣿⣿⣿⣿⢣⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣀⣴⠶⠿⠿⢷⡄⠀⠀⢀⣤⣾⣿
-    ⣿⣿⣿⣿⣡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣦⣤⣤⡀⠀⢷⡀⠀⠀⣻⣿⣿
-    ⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠛⠶⠛⠃⠈⠈⢿⣿⣿
-    ⣿⣿⠟⠘⠀⠀⠀⠀⠀⠀⠀⠀⢀⡆⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⠀⠀⠈⣿⣿
-    ⣿⠏⠀⠁⠀⠀⠀⠀⠀⠀⠀⢀⣶⡄⠀⠀⠀⠀⠀⠀⣡⣄⣿⡆⠀⠀⠀⠀⣿⣿
-    ⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠚⠛⠛⢛⣲⣶⣿⣷⣉⠉⢉⣥⡄⠀⠀⠀⠨⣿⣿
-    ⡇⢠⡆⠀⠀⢰⠀⠀⠀⠀⢸⣿⣧⣠⣿⣿⣿⣿⣿⣿⣷⣾⣿⡅⠀⠀⡄⠠⢸⣿
-    ⣧⠸⣇⠀⠀⠘⣤⡀⠀⠀⠘⣿⣿⣿⣿⣿⠟⠛⠻⣿⣿⣿⡿⢁⠀⠀⢰⠀⢸⣿
-    ⣿⣷⣽⣦⠀⠀⠙⢷⡀⠀⠀⠙⠻⠿⢿⣷⣾⣿⣶⠾⢟⣥⣾⣿⣧⠀⠂⢀⣿⣿
-    ⣿⣿⣿⣿⣷⣆⣠⣤⣤⣤⣀⣀⡀⠀⠒⢻⣶⣾⣿⣿⣿⣿⣿⣿⣿⢀⣀⣾⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⡿⠿⢿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠉⠉⠉⠙⠻⣅⠀⠈⢧⠀⠈⠛⠉⠉⢻⣿⣿
+⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⣤⡶⠟⠀⠀⣈⠓⢤⣶⡶⠿⠛⠻⣿
+⣿⣿⣿⣿⣿⢣⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣀⣴⠶⠿⠿⢷⡄⠀⠀⢀⣤⣾⣿
+⣿⣿⣿⣿⣡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣦⣤⣤⡀⠀⢷⡀⠀⠀⣻⣿⣿
+⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠛⠶⠛⠃⠈⠈⢿⣿⣿
+⣿⣿⠟⠘⠀⠀⠀⠀⠀⠀⠀⠀⢀⡆⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⠀⠀⠈⣿⣿
+⣿⠏⠀⠁⠀⠀⠀⠀⠀⠀⠀⢀⣶⡄⠀⠀⠀⠀⠀⠀⣡⣄⣿⡆⠀⠀⠀⠀⣿⣿
+⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠚⠛⠛⢛⣲⣶⣿⣷⣉⠉⢉⣥⡄⠀⠀⠀⠨⣿⣿
+⡇⢠⡆⠀⠀⢰⠀⠀⠀⠀⢸⣿⣧⣠⣿⣿⣿⣿⣿⣿⣷⣾⣿⡅⠀⠀⡄⠠⢸⣿
+⣧⠸⣇⠀⠀⠘⣤⡀⠀⠀⠘⣿⣿⣿⣿⣿⠟⠛⠻⣿⣿⣿⡿⢁⠀⠀⢰⠀⢸⣿
+⣿⣷⣽⣦⠀⠀⠙⢷⡀⠀⠀⠙⠻⠿⢿⣷⣾⣿⣶⠾⢟⣥⣾⣿⣧⠀⠂⢀⣿⣿
+⣿⣿⣿⣿⣷⣆⣠⣤⣤⣤⣀⣀⡀⠀⠒⢻⣶⣾⣿⣿⣿⣿⣿⣿⣿⢀⣀⣾⣿⣿
 
 C o d e d - B y - T h o m a s - N o o b S o f r e !
 """
@@ -139,7 +140,8 @@ def carregar_configuracoes():
             "TIMEZONE": True,
             "MESSAGE": True,
             "M3U_LINK": True
-        }
+        },
+        "request_timeout": 10 # Novo campo padrão para timeout de requisição
     }
     
     if os.path.exists(CONFIG_FILE):
@@ -154,7 +156,8 @@ def carregar_configuracoes():
                         "idioma": dados["sistema_operacional"].get("idioma", "pt"),
                         "configurado": dados["sistema_operacional"].get("configurado", False),
                         "banner_color": dados.get("banner_color", "90m"),  # Novo campo
-                        "hit_settings": {**defaults["hit_settings"], **dados.get("hit_settings", {})}
+                        "hit_settings": {**defaults["hit_settings"], **dados.get("hit_settings", {})},
+                        "request_timeout": dados.get("request_timeout", defaults["request_timeout"])
                     }
                 else:
                     # Mescla com defaults mantendo configurações existentes
@@ -167,6 +170,10 @@ def carregar_configuracoes():
                 if "banner_color" not in config:
                     config["banner_color"] = "90m"
                 
+                # Garante que o request_timeout esteja definido
+                if "request_timeout" not in config:
+                    config["request_timeout"] = defaults["request_timeout"]
+
                 return config
         except Exception as e:
             print(f"{cor.vermelho}Erro ao carregar configurações: {e}{cor.reset}")
@@ -182,7 +189,8 @@ def salvar_configuracao(config):
         "configurado": config.get("configurado", False),
         "categoria_tipo": config.get("categoria_tipo", "empilhado"),
         "banner_color": config.get("banner_color", "90m"),
-        "hit_settings": config.get("hit_settings", {})
+        "hit_settings": config.get("hit_settings", {}),
+        "request_timeout": config.get("request_timeout", 10)
     }
     with open(CONFIG_FILE, "w") as f:
         json.dump(config_plana, f, indent=4)
@@ -208,7 +216,7 @@ def banner(config, t):
         ⠀⠀⠀⠀⠀⠀⠀⠙⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠀{cor.reset}
 {cor.c_purple}\n            DEEPSEEK IPTV CHECKER BY @ReyFxck
             GitHub https://github.com/ReyFxck
-            Script Python, Version: 4 Beta: 5\n{cor.reset}
+            Script Python, Version: 6 Rev: 01\n{cor.reset}
             Translated by: {translated_by}{cor.reset}""")
 
 # ==============================================
@@ -475,14 +483,38 @@ def escolher_arquivo(pasta, t, tipo="combo", config=None):
         return None
 
 # Função para configurar o tipo de proxy
-def configurar_proxy(tipo, proxy):
-    if tipo == 1:  # HTTP/HTTPS
-        return {"http": proxy, "https": proxy}
-    elif tipo == 2:  # SOCKS4
-        return {"http": f"socks4://{proxy}", "https": f"socks4://{proxy}"}
-    elif tipo == 3:  # SOCKS5
-        return {"http": f"socks5://{proxy}", "https": f"socks5://{proxy}"}
-    else:
+def configurar_proxy(tipo, proxy, formato_paga=None):
+    """Formata proxy com base no tipo e no formato de autenticação"""
+    try:
+        if formato_paga == "1":  # hostname:port:username:password
+            host, port, user, pwd = proxy.split(":")
+            proxy_auth = f"{user}:{pwd}@{host}:{port}"
+        elif formato_paga == "2":  # username:password@hostname:port
+            proxy_auth = proxy
+        elif formato_paga == "3":  # http://username:password@hostname:port
+            proxy_auth = proxy.replace("http://", "")
+        else:
+            proxy_auth = proxy  # proxy grátis
+
+        if tipo == 1:
+            return {
+                "http": f"http://{proxy_auth}",
+                "https": f"http://{proxy_auth}"
+            }
+        elif tipo == 2:
+            return {
+                "http": f"socks4://{proxy_auth}",
+                "https": f"socks4://{proxy_auth}"
+            }
+        elif tipo == 3:
+            return {
+                "http": f"socks5://{proxy_auth}",
+                "https": f"socks5://{proxy_auth}"
+            }
+        else:
+            return None
+    except Exception as e:
+        print(f"{cor.vermelho}[ERRO CONFIG PROXY] {e}{cor.reset}")
         return None
 
 # Função para converter timestamp em data legível (formato DD.MM.YYYY - HH:MM)
@@ -493,51 +525,100 @@ def converter_data(timestamp, t=None):
         return t('checker.unlimited_time') if t else "Ilimitada"
 
 # Função para testar usuário e senha (com ou sem proxy)
-def test_account(username, password, proxy_config, server, headers, t, buscar_categorias_flag=False):
+def test_account(username, password, proxy_config, server, headers, t, buscar_categorias_flag=False, config=None):
+    """
+    Retorna uma tupla no formato:
+    (tipo_resultado, username, password, status, exp_date, status_code, user_info)
+
+    - tipo_resultado: "hit", "bad", "ban", "timeout", "proxy_error"
+    - username: str (input)
+    - password: str (input)
+    - status: str (ativo/expirado/etc)
+    - exp_date: str (data formatada ou "Ilimitada")
+    - status_code: int (código HTTP ou string de erro)
+    - user_info: dict (dados adicionais da conta)
+    """
     url = f"http://{server}/player_api.php?username={username}&password={password}"
     try:
         response = requests.get(
             url,
             proxies=proxy_config,
             headers=headers,
-            timeout=5
+            timeout=config.get("request_timeout", 10)
         )
         if response.status_code == 200:
             try:
                 data = response.json()
-                
                 auth = data.get("user_info", {}).get("auth", 0)
-                if auth == 0:
-                    auth = data.get("auth", 0)
+                if auth == 0: auth = data.get("auth", 0)
 
                 if auth == 1:
                     user_info = data.get("user_info", {})
                     status = user_info.get("status", data.get("status", "Desconhecido"))
                     exp_date = user_info.get("exp_date", data.get("exp_date"))
-                    exp_date = t('checker.unlimited_time') if exp_date is None else converter_data(exp_date, t)
-                    
-                    # Busca categorias apenas se configurado e for hit válido
+                    exp_date = t("checker.unlimited_time") if exp_date is None else converter_data(exp_date, t)
                     if buscar_categorias_flag:
-                        categorias = buscar_categorias(server, username, password, proxy_config, headers)
-                        user_info["categorias"] = categorias
+                        user_info["categorias"] = buscar_categorias(server, username, password, proxy_config, headers, config)
                     
-                    return username, password, status, exp_date, response.status_code, user_info, "hit"
+                    return (
+                        "hit", 
+                        username, 
+                        password, 
+                        status, 
+                        exp_date, 
+                        response.status_code, 
+                        user_info
+                    )
                 else:
-                    return username, password, None, None, response.status_code, None, "bad"
-            except ValueError:
-                return username, password, None, None, response.status_code, None, "bad"
-        elif response.status_code == 404:
-            return username, password, None, None, response.status_code, None, "bad"
-        elif response.status_code == 403 or response.status_code == 407:
-            return username, password, None, None, response.status_code, None, "ban"
-        elif response.status_code == 429:
-            return username, password, None, None, response.status_code, None, "429"
-        else:
-            return username, password, None, None, response.status_code, None, "proxy_ruim"
-    except Exception as e:
-        return username, password, None, None, str(e), None, "proxy_ruim"
 
-def buscar_categorias(server, username, password, proxy_config, headers, max_tentativas=3):
+                    return (
+                        "bad",  # ou "ban", "timeout", etc.
+                        username,
+                        password,
+                        None,  # status (não disponível)
+                        None,  # exp_date (não disponível)
+                        response.status_code,  # ou "TIMED OUT", "Proxy Error", etc.
+                        None   # user_info (não disponível)
+                    )
+            except (ValueError, json.JSONDecodeError):
+                return (
+                    "bad",
+                    username,
+                    password,
+                    None,
+                    None,
+                    response.status_code,
+                    None
+                 )
+        elif response.status_code in [403, 407]:
+            return "ban", username, password, None, None, response.status_code, None
+        else: # 404 e outros erros
+            return (
+                "bad",
+                username,
+                password,
+                None,
+                None,
+                response.status_code,
+                None
+            )
+
+    except requests.exceptions.Timeout:
+        return "timeout", username, password, None, None, "TIMED OUT", None
+    
+    except requests.exceptions.ProxyError as e:
+        print(f"{cor.vermelho}[DEBUG PROXY ERROR] {e}{cor.reset}") # Adicionado para depuração
+        return "proxy_error", username, password, None, None, "Proxy Error", None
+    
+    except requests.exceptions.ConnectionError as e:
+        print(f"{cor.vermelho}[DEBUG CONNECTION ERROR] {e}{cor.reset}") # Adicionado para depuração
+        return "connection_error", username, password, None, None, "Connection Error", None
+    
+    except requests.exceptions.RequestException:
+        return "proxy_error", username, password, None, None, "Request Error", None
+
+
+def buscar_categorias(server, username, password, proxy_config, headers, config, max_tentativas=3):
     """Busca categorias disponíveis para uma conta válida com tentativas"""
     url = f"http://{server}/player_api.php?username={username}&password={password}&action=get_live_categories"
     
@@ -547,7 +628,7 @@ def buscar_categorias(server, username, password, proxy_config, headers, max_ten
                 url,
                 proxies=proxy_config,
                 headers=headers,
-                timeout=10
+                timeout=config.get("request_timeout", 10)
             )
             
             if response.status_code == 200:
@@ -589,7 +670,8 @@ def salvar_hit(server, username, password, status, exp_date, user_info, caminho_
         
         with open(caminho_arquivo, "a", encoding="utf-8") as f:
             f.write("=====[ DEEPSEEK CHECKER ]=====\n")
-            f.write("DeepSeek Checker V5 Beta - Rev 1\n")
+            f.write("DeepSeek Checker V6 - Revision 1\n")
+            f.write("Coded by DeepSeek & ReyFxck Th.\n")
             f.write(f'{t("traduce.traduce_hit") if t else "HIT"}\n')
             f.write("=====[ HOST INFORMATION ]=====\n")
 
@@ -648,37 +730,97 @@ def salvar_hit(server, username, password, status, exp_date, user_info, caminho_
         print(f"{cor.vermelho}{error_msg} {e}{cor.reset}")
 
 
-def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans, total_linhas, caminho_arquivo, usar_proxy, arquivo_proxy, config, t, mostrar_categorias=False):
+def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans,
+                    total_linhas, caminho_arquivo, usar_proxy, arquivo_proxy, config, t,
+                    mostrar_categorias=False, formato_paga=None):
+    """
+    Processa combos de contas IPTV com múltiplas threads
+    Retorna: (hits, bads, bans)
+    """
     lock = threading.Lock()
     proxies_bons = []
     proxies_ruins = []
     contador_proxies = {}
     MAX_USOS_POR_PROXY = 4
-    def worker(config, t):
-        nonlocal hits, bads, bans
-        while True:
-            with lock:
-                if not combos:
-                    break
-                user, password = combos.pop(0)
-                linha_atual = total_linhas - len(combos)
 
-            # Se não estiver usando proxy
-            if usar_proxy != "1":
-                proxies = []
-                tipo_proxy = None
-                result = test_account(user, password, None, server, headers, t, mostrar_categorias)
-                username, password, status, exp_date, status_code, user_info, resultado = result
-                
+    class WorkerStats:
+        def __init__(self):
+            self.hits = 0
+            self.bads = 0
+            self.bans = 0
+
+    def testar_conta(user, password):
+        if usar_proxy == "1":
+            resultado, proxy_escolhida = testar_com_proxy(user, password)
+            return resultado, proxy_escolhida
+        else:
+            return testar_sem_proxy(user, password), None  # retorna só os 7 valores e None para proxy_escolhida
+
+
+    def testar_sem_proxy(user, password):
+        """Testa conta sem usar proxy"""
+        proxy_config = None
+        return test_account(user, password, proxy_config, server, headers, t, mostrar_categorias, config)
+
+    def testar_com_proxy(user, password):
+        """Testa conta usando proxy"""
+        for proxy_candidata in proxies_bons + proxies:
+            if proxy_candidata in proxies_ruins:
+                continue
+
+            with lock:
+                if contador_proxies.get(proxy_candidata, 0) >= MAX_USOS_POR_PROXY:
+                    continue
+
+            proxy_config = configurar_proxy(tipo_proxy, proxy_candidata, formato_paga)
+            resultado = test_account(user, password, proxy_config, server, headers, t, mostrar_categorias, config)
+
+            with lock:
+                contador_proxies[proxy_candidata] = contador_proxies.get(proxy_candidata, 0) + 1
+                atualizar_status_proxy(proxy_candidata, resultado[0])
+
+            if resultado[0] in ["hit", "bad", "ban"]:
+                return resultado, proxy_candidata
+
+        return ("proxy_error", user, password, None, None, "No working proxy", None), None
+
+    def atualizar_status_proxy(proxy, resultado):
+        """Atualiza status da proxy com base no resultado"""
+        if resultado in ["hit", "bad"]:
+            if proxy not in proxies_bons:
+                proxies_bons.append(proxy)
+            if proxy in proxies_ruins:
+                proxies_ruins.remove(proxy)
+        elif resultado in ["ban", "429", "proxy_ruim"]:
+            if proxy not in proxies_ruins:
+                proxies_ruins.append(proxy)
+            if proxy in proxies_bons:
+                proxies_bons.remove(proxy)
+
+    def worker(stats):
+        """Função executada por cada thread"""
+        try:
+            while True:
                 with lock:
-                    if resultado == "hit":
-                        hits += 1
+                    if not combos:
+                        break
+                    user, password = combos.pop(0)
+                    linha_atual = total_linhas - len(combos)
+
+                resultado = testar_conta(user, password)
+
+                tipo_resultado, username, password, status, exp_date, status_code, user_info = resultado[0]
+                proxy_escolhida = resultado[1]
+
+                with lock:
+                    if tipo_resultado == "hit":
+                        stats.hits += 1
                         salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo, config, t)
-                    elif resultado == "bad":
-                        bads += 1
-                    elif resultado == "ban":
-                        bans += 1
-                
+                    elif tipo_resultado == "bad":
+                        stats.bads += 1
+                    elif tipo_resultado == "ban":
+                        stats.bans += 1
+
                 exibir_informacoes(
                     server=server,
                     user=username,
@@ -686,106 +828,36 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                     status_code=status_code,
                     linha_atual=linha_atual,
                     total_linhas=total_linhas,
-                    hits=hits,
-                    bads=bads,
-                    bans=bans,
+                    hits=stats.hits,
+                    bads=stats.bads,
+                    bans=stats.bans,
                     usar_proxy=usar_proxy,
-                    proxies_bons_count=0,
-                    proxies_ruins_count=0,
-                    tipo_proxy=None,
-                    arquivo_proxy=None,
-                    proxy_escolhida=None,
+                    proxies_bons_count=len(proxies_bons) if usar_proxy == "1" else 0,
+                    proxies_ruins_count=len(proxies_ruins) if usar_proxy == "1" else 0,
+                    tipo_proxy=tipo_proxy if usar_proxy == "1" else None,
+                    arquivo_proxy=arquivo_proxy if usar_proxy == "1" else None,
+                    proxy_escolhida=proxy_escolhida,
                     config=config,
                     t=t
                 )
-                continue
-
-            # Se estiver usando proxy
-            proxy_escolhida = None
-            resultado = None
-            
-            for proxy_candidata in proxies_bons + proxies:
-                if proxy_candidata in proxies_ruins:
-                    continue
-                
-                with lock:
-                    if contador_proxies.get(proxy_candidata, 0) >= MAX_USOS_POR_PROXY:
-                        continue
-                
-                proxy_config = configurar_proxy(tipo_proxy, proxy_candidata)
-                result = test_account(user, password, proxy_config, server, headers, t, mostrar_categorias)
-                username, password, status, exp_date, status_code, user_info, resultado = result
-                
-                with lock:
-                    # Atualiza contador de usos da proxy
-                    contador_proxies[proxy_candidata] = contador_proxies.get(proxy_candidata, 0) + 1
-                    
-                    # Classifica a proxy
-                    if resultado in ["hit", "bad"]:
-                        if proxy_candidata not in proxies_bons:
-                            proxies_bons.append(proxy_candidata)
-                        if proxy_candidata in proxies_ruins:
-                            proxies_ruins.remove(proxy_candidata)
-                    elif resultado in ["ban", "429", "proxy_ruim"]:
-                        if proxy_candidata not in proxies_ruins:
-                            proxies_ruins.append(proxy_candidata)
-                        if proxy_candidata in proxies_bons:
-                            proxies_bons.remove(proxy_candidata)
-                
-                proxy_escolhida = proxy_candidata
-                
-                # Se obteve resultado, para de tentar outras proxies
-                if resultado in ["hit", "bad", "ban"]:
-                    break
-            
-            # Processa o resultado
-            with lock:
-                if resultado == "hit":
-                    hits += 1
-                    salvar_hit(server, username, password, status, exp_date, user_info, caminho_arquivo, config, t)
-                elif resultado == "bad":
-                    bads += 1
-                elif resultado == "ban":
-                    bans += 1
-            
-            exibir_informacoes(
-                server=server,
-                user=username if 'username' in locals() else user,
-                password=password,
-                status_code=status_code if 'status_code' in locals() else "N/A",
-                linha_atual=linha_atual,
-                total_linhas=total_linhas,
-                hits=hits,
-                bads=bads,
-                bans=bans,
-                usar_proxy=usar_proxy,
-                proxies_bons_count=len(proxies_bons),
-                proxies_ruins_count=len(proxies_ruins),
-                tipo_proxy=tipo_proxy,
-                arquivo_proxy=arquivo_proxy,
-                proxy_escolhida=proxy_escolhida,
-                config=config,
-                t=t
-            )
+        except Exception as e:
+            print(f"{cor.vermelho}[ERRO NA THREAD] {e}{cor.reset}")
+            traceback.print_exc()
 
     # Inicia as threads
     threads = []
+    stats = WorkerStats()
+    
     for _ in range(num_bots):
-        thread = threading.Thread(target=worker, args=(config, t))
+        thread = threading.Thread(target=worker, args=(stats,))
         thread.start()
         threads.append(thread)
 
+    # Aguarda todas as threads terminarem
     for thread in threads:
         thread.join()
 
-    # Salva proxies boas/ruins (opcional)
-    if usar_proxy == "1":
-        with open(os.path.join(pasta_proxy, "proxies_bons.txt"), "w") as f:
-            f.write("\n".join(proxies_bons))
-        with open(os.path.join(pasta_proxy, "proxies_ruins.txt"), "w") as f:
-            f.write("\n".join(proxies_ruins))
-
-    return hits, bads, bans
+    return stats.hits, stats.bads, stats.bans
 
 
 def exibir_informacoes(server, user, password, status_code, linha_atual, total_linhas, hits, bads, bans, usar_proxy, proxies_bons_count=None, proxies_ruins_count=None, tipo_proxy=None, arquivo_proxy=None, proxy_escolhida=None, config=None, t=None):
@@ -801,15 +873,15 @@ def exibir_informacoes(server, user, password, status_code, linha_atual, total_l
     infor_x = "\033[38;5;11m    INFORMATIONS\033[0m"
     
     tabela_host = [
-        ["\033[38;5;45m   Host: ", f"\033[38;5;47m http://{server} \033[0m"],
-        ["\033[38;5;153m   Status: ", status_code],
-        ["\033[38;5;81m   User: ", user],
-        ["\033[38;5;117m   Pass: ", password],
-        ["\033[1;38;5;156m   Hits: ", f"   {hits} {cor.reset} "],
-        [f"{cor.fail}   Fails: ", f"    {bads} "],
-        ["\033[1;38;5;214m   Banned: ", f"   {bans} {cor.reset} "],
-        ["   Combo", f"{linha_atual}/{total_linhas} "],
-        ["\033[38;5;189m   Restam: ", f" {total_linhas - linha_atual} "]
+        [f"\033[38;5;45m  Host: {cor.reset}", f"\033[38;5;47m http://{server} \033[0m"],
+        [f"\033[38;5;153m  Status: {cor.reset}", status_code if status_code not in ["TIMED OUT", "Proxy Error", "Connection Error", "Request Error"] else f"{cor.vermelho}{status_code}{cor.reset}"],
+        [f"\033[38;5;81m  User: {cor.reset}", user],
+        [f"\033[38;5;117m  Pass: {cor.reset}", password],
+        [f"\033[1;38;5;156m  Hits: {cor.reset}", f"   {hits} {cor.reset} "],
+        [f"{cor.fail}  Fails: {cor.reset}", f"    {bads} "],
+        [f"\033[1;38;5;214m  Banned: {cor.reset}", f"   {bans} {cor.reset} "],
+        [f"\033[38;5;188m  Combo: {cor.reset}", f"{linha_atual}/{total_linhas} "],
+        [f"\033[38;5;189m  Restam: {cor.reset}", f" {total_linhas - linha_atual} "]
     ]
     
     # Adiciona a tabela ao buffer
@@ -898,7 +970,7 @@ def banner_checking(config, t, return_str=False):
 {cor.c_purple}
             DEEPSEEK IPTV CHECKER BY @ReyFxck
             GitHub https://github.com/ReyFxck
-            Script Python, Version: 4 Beta: 5{cor.reset}
+            Script Python, Version: 6 Rev: 01{cor.reset}
             Translated by: {t('traduce.traduce_json', default='Json não carregado')}{cor.reset}\n"""
     
     else:  # Modo azul padrão
@@ -960,9 +1032,9 @@ def mostrar_menu_configuracoes(config, t):
         print(f"{cor.azul}  = 2. {t('change_os', 'Change operating system')} (Atual: {config['sistema_operacional'] or 'Não configurado'}){cor.reset}")
         print(f"{cor.azul}  = 3. {t('menu.categoria_menu', 'CATEGORY SETTINGS')}{cor.reset}")
         print(f"{cor.azul}  = 4. {t('menu.banner_settings', 'BANNER SETTINGS')}{cor.reset}")
+        print(f"{cor.azul}  = 5. {t("menu.request_timeout_settings", "REQUEST TIMEOUT SETTINGS")} (Atual: {config["request_timeout"]}s){cor.reset}")
         print(f"{cor.azul}  = 5. {t('save_exit', 'Save and exit')}{cor.reset}")
         print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
-
         escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
         
         if escolha == "1":
@@ -974,10 +1046,42 @@ def mostrar_menu_configuracoes(config, t):
         elif escolha == "4":
             configurar_banner(config, t)  # Nova função
         elif escolha == "5":
+            configurar_request_timeout(config, t) # Nova função para timeout
+        elif escolha == "6":
             salvar_configuracao(config)
             break
         else:
             print(f"{cor.vermelho}{t('invalid_option')}{cor.reset}")
+
+def configurar_request_timeout(config, t):
+    """Menu para configurar o tempo limite das requisições"""
+    while True:
+        banner(config, t)
+        current_timeout = config.get("request_timeout", 10)
+        
+        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DE TEMPO LIMITE DE REQUISIÇÃO ==={cor.reset}")
+        print(f"{cor.azul}  Tempo limite atual: {current_timeout} segundos{cor.reset}")
+        print(f"{cor.azul}  Digite o novo tempo limite em segundos (ou \'v\' para voltar):{cor.reset}\n")
+        
+        escolha = input(f"{cor.verde}  {t("responses.response")} >>> {cor.reset}").strip()
+        
+        if escolha.lower() == "v":
+            break
+        
+        try:
+            novo_timeout = int(escolha)
+            if novo_timeout > 0:
+                config["request_timeout"] = novo_timeout
+                salvar_configuracao(config)
+                print(f"{cor.verde}Tempo limite de requisição salvo: {novo_timeout} segundos!{cor.reset}")
+                time.sleep(1)
+                break
+            else:
+                print(f"{cor.vermelho}O tempo limite deve ser um número positivo!{cor.reset}")
+                time.sleep(1)
+        except ValueError:
+            print(f"{cor.vermelho}Entrada inválida! Digite um número inteiro ou \'v\' para voltar.{cor.reset}")
+            time.sleep(1)
 
 
 # Função para configurar o banner:
@@ -1159,37 +1263,92 @@ def main():
 
     if usar_proxy == "1":
         banner(config, t)
-        arquivo_proxy = escolher_arquivo(pasta_proxy, t, tipo="proxy")
-        
-        proxies = []
-        tipo_proxy = None
-        
-        # Se retornar uma tupla, é porque escolheu API (proxies, tipo_proxy)
-        if isinstance(arquivo_proxy, tuple):
-            proxies, tipo_proxy = arquivo_proxy
-            arquivo_proxy = "ONLINE_API"  # Para exibição apenas
-        elif arquivo_proxy:
-            # Se for arquivo normal, ler proxies e perguntar tipo
-            with open(arquivo_proxy, 'r') as f:
-                proxies = [linha.strip() for linha in f.readlines()]
-            
-            # Escolher tipo de proxy apenas se não veio da API
+        print(f"\n{cor.ciano}Deseja usar proxy paga ou grátis?{cor.reset}")
+        print(f"{cor.azul}1. Proxy Grátis (sem usuário/senha){cor.reset}")
+        print(f"{cor.azul}2. Proxy Paga (com usuário/senha){cor.reset}")
+        tipo_acesso_proxy = input(f"{cor.verde}>>> {cor.reset}").strip()
+
+        formato_paga = None # Inicializa a variável
+
+        if tipo_acesso_proxy == "1":
+            # Proxy grátis
             banner(config, t)
-            print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
-            print(f"{cor.atention}  {t("questions.proxy_type")}{cor.reset}")
-            print(f"{cor.azul}  1. HTTP/HTTPS{cor.reset}")
-            print(f"{cor.azul}  2. SOCKS4{cor.reset}")
-            print(f"{cor.azul}  3. SOCKS5{cor.reset}")
-            print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
-            try:
-                tipo_proxy = int(input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}"))
-                if tipo_proxy not in [1, 2, 3]:
-                    print(f"\n  {cor.vermelho}{t("questions.error_type_proxy")}{cor.reset}")
+            
+            # AQUI ESTÁ A MUDANÇA PRINCIPAL
+            retorno_proxy = escolher_arquivo(pasta_proxy, t, tipo="proxy", config=config)
+
+            if isinstance(retorno_proxy, tuple):
+                # Se for uma tupla, veio da API online
+                proxies, tipo_proxy = retorno_proxy
+                arquivo_proxy = "ONLINE_API" # Apenas para referência
+            elif retorno_proxy:
+                # Se for uma string, é um caminho de arquivo local
+                arquivo_proxy = retorno_proxy
+                try:
+                    with open(arquivo_proxy, 'r') as f:
+                        proxies = [linha.strip() for linha in f if linha.strip()]
+                    
+                    banner(config, t)
+                    print(f"\n{cor.atention}  Escolha o tipo da Proxy:{cor.reset}")
+                    print(f"{cor.azul}  1. HTTP/HTTPS\n  2. SOCKS4\n  3. SOCKS5{cor.reset}")
+                    tipo_proxy = int(input(f"{cor.verde}>>> {cor.reset}"))
+                except FileNotFoundError:
+                    print(f"{cor.vermelho}Arquivo de proxy não encontrado!{cor.reset}")
                     return
-            except ValueError:
-                print(f"{cor.vermelho}\n  {t("responses.invalid_type_proxy")}{cor.reset}")
+                except (ValueError, TypeError):
+                    print(f"{cor.vermelho}Tipo de proxy inválido!{cor.reset}")
+                    return
+            else:
+                # Nenhuma opção válida escolhida
+                print(f"{cor.vermelho}Nenhuma fonte de proxy selecionada.{cor.reset}")
                 return
+
+        elif tipo_acesso_proxy == "2":
+            banner(config, t)
+            print(f"\n{cor.ciano}Deseja digitar os dados da proxy paga ou carregar de um .txt?{cor.reset}")
+            print(f"{cor.azul}1. Digitar manualmente\n2. Carregar de um arquivo{cor.reset}")
+            escolha_proxy_paga = input(f"{cor.verde}>>> {cor.reset}").strip()
+
+            if escolha_proxy_paga == "1":
+                host = input(f"{cor.ciano}Host (ex: rp.scrapegw.com){cor.reset}\n{cor.verde}>>> {cor.reset}")
+                port = input(f"{cor.ciano}Porta (ex: 6060){cor.reset}\n{cor.verde}>>> {cor.reset}")
+                user = input(f"{cor.ciano}Usuário:{cor.reset}\n{cor.verde}>>> {cor.reset}")
+                senha = input(f"{cor.ciano}Senha:{cor.reset}\n{cor.verde}>>> {cor.reset}")
+                proxies = [f"{host}:{port}:{user}:{senha}"]
+                arquivo_proxy = "PROXY MANUAL PAID"
+            elif escolha_proxy_paga == "2":
+                arquivo_proxy = escolher_arquivo(pasta_proxy, t, tipo="proxy")
+                if not arquivo_proxy:
+                    return
+                with open(arquivo_proxy, 'r') as f:
+                    proxies = [linha.strip() for linha in f if linha.strip()]
+                arquivo_proxy = os.path.basename(arquivo_proxy)
+            else:
+                print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+                return
+
+            # Pergunta o formato da proxy paga
+            print(f"\n{cor.ciano}Qual é o formato da proxy paga?{cor.reset}")
+            print(f"{cor.azul}1. hostname:port:username:password")
+            print(f"2. username:password@hostname:port")
+            print(f"3. http://username:password@hostname:port{cor.reset}")
+            formato_paga = input(f"{cor.verde}>>> {cor.reset}").strip()
+
+            # Pergunta o protocolo
+            print(f"\n{cor.ciano}Qual protocolo deseja usar?{cor.reset}")
+            print(f"{cor.azul}1. HTTP/HTTPS\n2. SOCKS5{cor.reset}")
+            protocolo_input = input(f"{cor.verde}>>> {cor.reset}").strip()
+
+            if protocolo_input == "1":
+                tipo_proxy = 1
+            elif protocolo_input == "2":
+                tipo_proxy = 3
+            else:
+                print(f"{cor.vermelho}Protocolo inválido!{cor.reset}")
+                return
+
         else:
+            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
             return
 
     # Perguntar se deseja mostrar categorias
@@ -1260,10 +1419,10 @@ def main():
 
     # Processar combos com múltiplos bots
     hits, bads, bans = processar_combos(
-        combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans, 
+        combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans,
         total_linhas, caminho_arquivo, usar_proxy,
         arquivo_proxy if usar_proxy == "1" else None, config, t,
-        mostrar_categorias == "1"
+        mostrar_categorias == "1", formato_paga if usar_proxy == "1" and tipo_acesso_proxy == "2" else None
     )
 
     # Exibir resumo final simplificado

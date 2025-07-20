@@ -35,3 +35,5 @@ ReyFxck e comunidade, ideias ...
 - 10% por pedaço de código por TrainAgain.
 
 - Adicionar meu combo on-line também [** SEM o CÓDIGO do ARGUMENTO ANTERIOR **]
+
+- Adicionar configurações para os Proxys [NOT]**
