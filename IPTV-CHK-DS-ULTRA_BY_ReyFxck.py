@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 DEEPSEEK IPTV CHECKER VERSION - 6 REV - 1
 PY CONFIG BY Thomas R., Telegram: @ReyFxck
@@ -78,6 +80,8 @@ except ImportError:
 CONFIG_FILE = "config.json"
 LANG_DIR = "Language"
 PROXY_API_FILE = "proxy_api.json"
+COMBO_API_FILE = "combo_api.json"
+# Carrega as APIs no início
 
 def carregar_proxy_apis():
     """Carrega as APIs de proxy do arquivo JSON"""
@@ -96,10 +100,27 @@ def carregar_proxy_apis():
             return defaults
     return defaults
 
-
-# Carrega as APIs no início
 PROXY_APIS = carregar_proxy_apis()
 
+def carregar_combo_apis():
+    """Carrega as APIs de combo do arquivo JSON"""
+    combo_api_file = "combo_api.json"
+    defaults = {
+        "NORMALIA": {
+            "url": "https://raw.githubusercontent.com/ReyFxck/DeepSeek-IPTV-Checker/refs/heads/main/Online-Combos/DwkekaDJ-NORMALIA.txt",
+            "display_name": "NORMALIA [BY Dwkeka DJ - 9957 Lines]"
+        }
+    }
+    
+    if os.path.exists(combo_api_file):
+        try:
+            with open(combo_api_file, "r") as f:
+                return json.load(f)
+        except:
+            return defaults
+    return defaults
+
+COMBO_APIS = carregar_combo_apis()
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -406,6 +427,134 @@ def limpar_host(host):
     return host
 
 
+def escolher_combo_api(config, t):
+    """Mostra menu de APIs de combo e retorna lista de combos"""
+    banner(config, t)
+    print(f"\n{cor.ciano}  === ONLINE COMBO API'S ==={cor.reset}")
+    print(f"{cor.atention}  Selecione a fonte de combos online:{cor.reset}\n")
+    
+    for i, (nome, dados) in enumerate(COMBO_APIS.items(), 1):
+        display = dados.get("display_name", nome)
+        print(f"{cor.azul}  {i}. {display}{cor.reset}")
+    
+    print(f"\n{cor.ciano}  {len(COMBO_APIS)+1}. Voltar{cor.reset}")
+    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    
+    try:
+        escolha = int(input(f"{cor.verde}>> {cor.reset}")) - 1
+        if escolha == len(COMBO_APIS):
+            return None  # Voltar
+        
+        if 0 <= escolha < len(COMBO_APIS):
+            nome_api = list(COMBO_APIS.keys())[escolha]
+            api = COMBO_APIS[nome_api]
+            
+            print(f"\n{cor.verde}  Obtendo combos de {api.get("display_name", nome_api)}...{cor.reset}")
+            
+            try:
+                # Headers mais realistas para contornar Cloudflare
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'DNT': '1',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'Cache-Control': 'max-age=0'
+                }
+                # Mescla com headers específicos da API, se houver
+                headers.update(api.get("headers", {}))
+
+                tentativas = config.get("tentativas_sem_proxy", 2)
+                timeout = config.get("timeout_sem_proxy", 10)
+                
+                for tentativa in range(tentativas):
+                    try:
+                        # Adiciona um delay entre tentativas para parecer mais humano
+                        if tentativa > 0:
+                            time.sleep(random.uniform(2, 5))
+
+                        response = requests.get(api["url"], headers=headers, timeout=timeout, allow_redirects=True)
+                        
+                        if response.status_code == 200:
+                            # Tenta primeiro como texto simples (formato user:pass)
+                            linhas = response.text.strip().split('\n')
+                            combos = []
+                            for linha in linhas:
+                                linha = linha.strip()
+                                if ":" in linha and len(linha.split(":")) >= 2:
+                                    parts = linha.split(":", 1)
+                                    combos.append((parts[0], parts[1]))
+                            
+                            if combos:
+                                print(f"{cor.verde}  {len(combos)} combos obtidos com sucesso!{cor.reset}")
+                                return combos
+                            else:
+                                # Se não encontrou combos no formato texto, tenta JSON
+                                try:
+                                    data = response.json()
+                                    combos = []
+                                    
+                                    if isinstance(data, list):
+                                        for item in data:
+                                            if isinstance(item, dict) and 'user' in item and 'pass' in item:
+                                                combos.append((item['user'], item['pass']))
+                                            elif isinstance(item, str) and ':' in item:
+                                                parts = item.split(':', 1)
+                                                if len(parts) == 2:
+                                                    combos.append((parts[0], parts[1]))
+                                    elif isinstance(data, dict):
+                                        for key, value in data.items():
+                                            if isinstance(value, list):
+                                                for item in value:
+                                                    if isinstance(item, dict) and 'user' in item and 'pass' in item:
+                                                        combos.append((item['user'], item['pass']))
+                                                    elif isinstance(item, str) and ':' in item:
+                                                        parts = item.split(':', 1)
+                                                        if len(parts) == 2:
+                                                            combos.append((parts[0], parts[1]))
+                                    
+                                    if combos:
+                                        print(f"{cor.verde}  {len(combos)} combos obtidos com sucesso!{cor.reset}")
+                                        return combos
+                                except json.JSONDecodeError:
+                                    pass # Não é JSON, continua para o próximo formato ou falha
+                                    
+                        elif response.status_code == 403:
+                            print(f"{cor.vermelho}  Erro 403: Cloudflare bloqueou o acesso (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        elif response.status_code == 429:
+                            print(f"{cor.amarelo}  Rate limit (429): Aguardando antes da próxima tentativa...{cor.reset}")
+                            time.sleep(10) # Espera mais tempo para rate limit
+                        else:
+                            print(f"{cor.vermelho}  Erro HTTP {response.status_code} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                            
+                    except requests.exceptions.Timeout:
+                        print(f"{cor.vermelho}Timeout ao carregar combo da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    except requests.exceptions.ConnectionError:
+                        print(f"{cor.vermelho}Erro de conexão ao carregar combo da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    except Exception as e:
+                        print(f"{cor.vermelho}Erro ao carregar combo da API: {e} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    
+                    # Delay maior entre tentativas quando há erro 403 ou outros erros de rede
+                    if tentativa < tentativas - 1:
+                        time.sleep(random.uniform(3, 8))
+                
+                print(f"{cor.vermelho}  Falha ao obter combos após {tentativas} tentativas{cor.reset}")
+                return None
+                
+            except Exception as e:
+                print(f"{cor.vermelho}  Erro ao acessar API: {str(e)}{cor.reset}")
+                return None
+    except ValueError:
+        print(f"{cor.vermelho}  Opção inválida!{cor.reset}")
+        return None
+
+
 def escolher_proxy_api(config, t):
     """Mostra menu de APIs de proxy e retorna (proxies, tipo_proxy)"""
     banner(config, t)
@@ -430,47 +579,52 @@ def escolher_proxy_api(config, t):
             nome_api = list(PROXY_APIS.keys())[escolha]
             api = PROXY_APIS[nome_api]
             
-            print(f"\n{cor.verde}  Obtendo proxies de {api.get('display_name', nome_api)}...{cor.reset}")
+            print(f"\n{cor.verde}  Obtendo proxies de {api.get("display_name", nome_api)}...{cor.reset}")
             
-            try:
-                headers = api.get("headers", {})
-                response = requests.get(api["url"], headers=headers, timeout=10)
-                if response.status_code == 200:
-                    proxies = [p.strip() for p in response.text.splitlines() if p.strip()]
+            # Adicionando tentativas e tratamento de erros para proxies online
+            tentativas = config.get("tentativas_sem_proxy", 2) # Usando a mesma config de tentativas
+            timeout = config.get("timeout_sem_proxy", 10) # Usando a mesma config de timeout
+
+            for tentativa in range(tentativas):
+                try:
+                    headers = api.get("headers", {})
+                    response = requests.get(api["url"], headers=headers, timeout=timeout)
                     
-                    if api.get("clean_protocol", False):
-                        proxies = [p.replace("http://", "").replace("socks4://", "").replace("socks5://", "") for p in proxies]
-                    
-                    print(f"{cor.verde}  {len(proxies)} proxies obtidos com sucesso!{cor.reset}")
-                    return proxies, api["type"]
-                else:
-                    print(f"{cor.vermelho}  Erro ao acessar API: Status {response.status_code}{cor.reset}")
-                    return None
-            except Exception as e:
-                print(f"{cor.vermelho}  Erro ao acessar API: {str(e)}{cor.reset}")
-                return None
+                    if response.status_code == 200:
+                        proxies = [p.strip() for p in response.text.splitlines() if p.strip()]
+                        
+                        if api.get("clean_protocol", False):
+                            proxies = [p.replace("http://", "").replace("socks4://", "").replace("socks5://", "") for p in proxies]
+                        
+                        if proxies:
+                            print(f"{cor.verde}  {len(proxies)} proxies obtidos com sucesso!{cor.reset}")
+                            return proxies, api["type"]
+                        else:
+                            print(f"{cor.amarelo}  Nenhum proxy encontrado na API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    elif response.status_code == 403:
+                        print(f"{cor.vermelho}  Erro 403: Cloudflare bloqueou o acesso ao proxy (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    elif response.status_code == 429:
+                        print(f"{cor.amarelo}  Rate limit (429) para proxy: Aguardando antes da próxima tentativa...{cor.reset}")
+                        time.sleep(10)
+                    else:
+                        print(f"{cor.vermelho}  Erro HTTP {response.status_code} ao acessar proxy (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        
+                except requests.exceptions.Timeout:
+                    print(f"{cor.vermelho}Timeout ao carregar proxy da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                except requests.exceptions.ConnectionError:
+                    print(f"{cor.vermelho}Erro de conexão ao carregar proxy da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                except Exception as e:
+                    print(f"{cor.vermelho}Erro ao carregar proxy da API: {e} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                
+                if tentativa < tentativas - 1:
+                    time.sleep(random.uniform(3, 8)) # Delay entre tentativas
+            
+            print(f"{cor.vermelho}  Falha ao obter proxies após {tentativas} tentativas{cor.reset}")
+            return None
+                
     except ValueError:
         print(f"{cor.vermelho}  Opção inválida!{cor.reset}")
         return None
-
-
-def carregar_proxy_apis():
-    """Carrega as APIs de proxy do arquivo JSON"""
-    proxy_api_file = "proxy_api.json"
-    defaults = {
-        "ProxyScrape": {
-            "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
-            "type": 1
-        }
-    }
-    
-    if os.path.exists(proxy_api_file):
-        try:
-            with open(proxy_api_file, "r") as f:
-                return json.load(f)
-        except:
-            return defaults
-    return defaults
 
 
 # Função para listar arquivos em uma pasta e permitir a escolha pelo número
@@ -488,9 +642,11 @@ def escolher_arquivo(pasta, t, tipo="combo", config=None):
     else:
         print(f"{cor.atention}  {t('questions.select_proxy_file')}{cor.reset}")
     
+    if tipo == "combo":
+        print(f"{cor.azul}  0. ONLINE COMBO API'S{cor.reset}")
     # Adiciona opção para Proxy Online se for seleção de proxy
-    if tipo != "combo":
-        print(f"{cor.azul}  0. ONLINE PROXY API'S{cor.reset}")
+    elif tipo != "combo":
+         print(f"{cor.azul}  0. ONLINE PROXY API'S{cor.reset}")
     
     for i, arquivo in enumerate(arquivos, 1):
         print(f"{cor.azul}  {i}. {arquivo}{cor.reset}")
@@ -500,8 +656,11 @@ def escolher_arquivo(pasta, t, tipo="combo", config=None):
     try:
         escolha = input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}").strip()
         
-        # Se for 0 e for seleção de proxy, mostrar menu de APIs
-        if escolha == "0" and tipo != "combo":
+        # Se for 0 e for seleção de combo, mostrar menu de APIs de combo
+        if escolha == "0" and tipo == "combo":
+            return escolher_combo_api(config, t)
+        # Se for 0 e for seleção de proxy, mostrar menu de APIs de proxy
+        elif escolha == "0" and tipo != "combo":
             return escolher_proxy_api(config, t)
             
         escolha = int(escolha) - 1
@@ -513,6 +672,7 @@ def escolher_arquivo(pasta, t, tipo="combo", config=None):
     except ValueError:
         print(f"{cor.vermelho}\n  {t('responses.invalid_input')}{cor.reset}")
         return None
+
 
 # Função para configurar o tipo de proxy
 def configurar_proxy(tipo, proxy, formato_paga=None):
@@ -534,14 +694,18 @@ def configurar_proxy(tipo, proxy, formato_paga=None):
                 "https": f"http://{proxy_auth}"
             }
         elif tipo == 2:
+            if not proxy_auth.startswith("socks4://"):
+                proxy_auth = f"socks4://{proxy_auth}"
             return {
-                "http": f"socks4://{proxy_auth}",
-                "https": f"socks4://{proxy_auth}"
+                "http": proxy_auth,
+                "https": proxy_auth
             }
         elif tipo == 3:
+            if not proxy_auth.startswith("socks5://"):
+                proxy_auth = f"socks5://{proxy_auth}"
             return {
-                "http": f"socks5://{proxy_auth}",
-                "https": f"socks5://{proxy_auth}"
+                "http": proxy_auth,
+                "https": proxy_auth
             }
         else:
             return None
@@ -1073,32 +1237,35 @@ def mostrar_menu_configuracoes(config, t):
     """Menu de configurações com opções de idioma, SO, categorias, banner e requisições"""
     while True:
         banner(config, t)
-        print(f"\n{cor.ciano}  === {t('settings_title', 'SETTINGS')} ==={cor.reset}")
+        print(f'\n{cor.ciano}  === {t('settings_title', 'SETTINGS')} ==={cor.reset}')
         print(f"{cor.azul}  = 1. {t('change_language', 'Change Language')} (Atual: {config['idioma']}){cor.reset}")
-        print(f"{cor.azul}  = 2. {t('change_os', 'Change operating system')} (Atual: {config.get('sistema_operacional', 'Não configurado')}){cor.reset}")
-        print(f"{cor.azul}  = 3. {t('menu.categoria_menu', 'CATEGORY SETTINGS')}{cor.reset}")
-        print(f"{cor.azul}  = 4. {t('menu.banner_settings', 'BANNER SETTINGS')}{cor.reset}")
-        print(f"{cor.azul}  = 5. Configurações de Requisição{cor.reset}")
-        print(f"{cor.azul}  = 6. {t('save_exit', 'Save and exit')}{cor.reset}")
+        print(f'{cor.azul}  = 2. {t('change_os', 'Change operating system')} (Atual: {config.get('sistema_operacional', 'Não configurado')}){cor.reset}')
+        print(f'{cor.azul}  = 3. {t('menu.categoria_menu', 'CATEGORY SETTINGS')}{cor.reset}')
+        print(f'{cor.azul}  = 4. {t('menu.banner_settings', 'BANNER SETTINGS')}{cor.reset}')
+        print(f'{cor.azul}  = 5. Configurações de Requisição{cor.reset}')
+        print(f'{cor.azul}  = 6. Configurar informações do HIT{cor.reset}')
+        print(f'{cor.azul}  = 7. {t('save_exit', 'Save and exit')}{cor.reset}')
         print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
         
-        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        escolha = input(f'{cor.verde}  {t('responses.response')} >>> {cor.reset}').strip()
         
-        if escolha == "1":
-            config["idioma"] = selecionar_idioma()
-        elif escolha == "2":
-            config["sistema_operacional"] = escolher_sistema_operacional(config, t)
-        elif escolha == "3":
+        if escolha == '1':
+            config['idioma'] = selecionar_idioma()
+        elif escolha == '2':
+            config['sistema_operacional'] = escolher_sistema_operacional(config, t)
+        elif escolha == '3':
             configurar_categoria(config, t)
-        elif escolha == "4":
+        elif escolha == '4':
             configurar_banner(config, t)
-        elif escolha == "5":
+        elif escolha == '5':
             configurar_requisicoes(config, t)
-        elif escolha == "6":
+        elif escolha == '6':
+            configurar_hit_settings(config, t)
+        elif escolha == '7':
             salvar_configuracao(config)
             break
         else:
-            print(f"{cor.vermelho}{t('invalid_option', 'Opção inválida!')}{cor.reset}")
+            print(f'{cor.vermelho}{t('invalid_option', 'Opção inválida!')}{cor.reset}')
 
 
 # Função para configurar o banner:
@@ -1313,10 +1480,47 @@ def main():
             print(f"{cor.amarelo}  {t('responses.creating_folder_combo')} {pasta}{cor.reset}")
             os.makedirs(pasta)
 
-    arquivo_combo = escolher_arquivo(pasta_combo, t, tipo="combo")
-    
-    if not arquivo_combo:
-        return
+    combos = []
+    arquivo_combo = None
+
+    while True:
+        resultado_combo = escolher_arquivo(pasta_combo, t, tipo="combo", config=config)
+
+        if not resultado_combo:
+            print(f"{cor.vermelho}Nenhum combo selecionado. Encerrando...{cor.reset}")
+            return
+
+        if isinstance(resultado_combo, list):
+            combos = resultado_combo
+            arquivo_combo = "ONLINE COMBO API'S"
+            print(f"{cor.verde}{len(combos)} combos carregados da API online.{cor.reset}")
+            break # Sai do loop se combos online foram carregados com sucesso
+        else:
+            arquivo_combo = resultado_combo
+            print(f"{cor.ciano}Carregando combos do arquivo local: {os.path.basename(arquivo_combo)}{cor.reset}")
+            try:
+                linhas_invalidas = 0
+                with open(arquivo_combo, 'r', encoding='utf-8') as f:
+                    for linha in f.readlines():
+                        linha = linha.strip()
+                        if ":" in linha and len(linha.split(":")) == 2:
+                            username, password = linha.split(":", 1)
+                            combos.append((username, password))
+                        else:
+                            linhas_invalidas += 1
+
+                if linhas_invalidas > 0:
+                    print(f"{cor.amarelo}{linhas_invalidas} linhas inválidas foram removidas do combo.{cor.reset}")
+                
+                if combos:
+                    break # Sai do loop se combos locais foram carregados com sucesso
+                else:
+                    print(f"{cor.vermelho}Nenhum combo válido encontrado no arquivo local. Tente novamente.{cor.reset}")
+
+            except FileNotFoundError:
+                print(f"{cor.vermelho}Erro: O arquivo de combo '{arquivo_combo}' não foi encontrado. Tente novamente.{cor.reset}")
+            except Exception as e:
+                print(f"{cor.vermelho}Erro ao ler o arquivo de combo: {e}. Tente novamente.{cor.reset}")
 
     # Perguntar se deseja usar proxy
     banner(config, t)
@@ -1442,25 +1646,6 @@ def main():
             return
     except ValueError:
         print(f"{cor.vermelho}{t("responses.invalid_input_number")}{cor.reset}")
-        return
-
-    # Ler combos (usuário:senha)
-    combos = []
-    linhas_invalidas = 0
-    with open(arquivo_combo, 'r', encoding='utf-8') as f:
-        for linha in f.readlines():
-            linha = linha.strip()
-            if ":" in linha and len(linha.split(":")) == 2:  # Verifica se a linha está no formato correto
-                username, password = linha.split(":", 1)  # Divide apenas no primeiro ":"
-                combos.append((username, password))
-            else:
-                linhas_invalidas += 1
-
-    if linhas_invalidas > 0:
-        print(f"{cor.amarelo}{t("responses.removing_invalid_lines").format(linhas_invalidas=linhas_invalidas)}{cor.reset}")
-
-    if not combos:
-        print(f"{cor.vermelho}{t("responses.no_valid_combo_found")}{cor.reset}")
         return
 
     # Configurar headers personalizados
