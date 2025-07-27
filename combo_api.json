@@ -1,10 +1,26 @@
 {
-    "NORMALIA": {
-        "url": "https://raw.githubusercontent.com/ReyFxck/DeepSeek-IPTV-Checker/refs/heads/main/Online-Combos/DwkekaDJ-NORMALIA.txt",
-        "display_name": "NORMALIA [BY Dwkeka DJ - 9K Lines]"
-    },
     "DARKSOULS": {
         "url": "https://raw.githubusercontent.com/ReyFxck/DeepSeek-IPTV-Checker/refs/heads/main/Online-Combos/ReyFxck-DarkSoulsV5.txt",
         "display_name": "DARKSOULS V5 [BY ReyFxck - 500K+ Lines]"
+    },
+    "NORMALIA": {
+        "url": "https://raw.githubusercontent.com/ReyFxck/DeepSeek-IPTV-Checker/refs/heads/main/Online-Combos/DwkekaDJ-NORMALIA.txt",
+        "display_name": "NORMALIA [BY Dwkeka DJ - 9K+ Lines]"
+    },
+    "DWKEKADJ_REVOLUCAO": {
+        "url": "https://gist.githubusercontent.com/dwkeka/01824afe597de2516bd81a62dca7827a/raw/",
+        "display_name": "Revolução Next 2 [BY Dwkeka DJ - 5K+ Lines]"
+    },
+    "MARLON_SILVA_MEGACOMBO": {
+        "url": "http://pt.textbin.net/raw/fkkgquednt",
+        "display_name": "MegaCombo BR [BY Marlon Silva - 21K+ Lines]"
+    },
+    "MARLON_SILVA_ELITEX": {
+        "url": "http://pt.textbin.net/raw/7cf9emwwbc",
+        "display_name": "Elite X [BY Marlon Silva - 23K+ Lines]"
+    },
+    "MARLON_SILVA_INFINITY": {
+        "url": "https://raw.githubusercontent.com/Marlonwap/Arquivos/refs/heads/main/Combo_Online.txt",
+        "display_name": "Infinity Stream [BY Marlon Silva - 24K+ Lines]"
     }
 }

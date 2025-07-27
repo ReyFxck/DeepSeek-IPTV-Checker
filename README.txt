@@ -22,9 +22,12 @@ Este projeto foi feito por Thomas Reis. Tg: @ReyFxck
 
 [ ! ] CONTRIBUIÇÃO:
 @Authentic_Hell:  English Translation
-@TrainAgain:  Traducción español, Beta tester
+@TrainAgain:  Traducción español, Tester, example codes
 @ReyFxck:  [Dono] All..
-@MdSouza: Beta tester
+@MdSouza:  Beta tester
+@Elieldocarmo7644:  Online Combo
+@marlonbr:  Online Combo
+@FeehSant: Tester, Tutorial de como utilizar.
 
 [ ! ] IPTV GRUPO TELEGRAM:
 https://t.me/+1pQYqHrSa-VlZWYx
@@ -35,5 +38,5 @@ https://github.com/ReyFxck/DeepSeek-IPTV-Checker
 BUGS E SOLUÇÕES:
 https://github.com/ReyFxck/DeepSeek-IPTV-Checker/blob/main/Fix_Bugs.md
 
-INSTALAÇÃO:
+INSTALAÇÃO (TERMUX/PYDROID):
 https://github.com/ReyFxck/DeepSeek-IPTV-Checker/blob/main/How_to_use.md
