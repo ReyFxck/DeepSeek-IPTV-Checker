@@ -1300,7 +1300,7 @@ def mostrar_menu_configuracoes(config, t):
         print("{}  = [1] {} (Atual: {}){}".format(cor.azul, t('change_language', 'Change Language'), config['idioma'], cor.reset))
         print("{}  = [2] {} (Atual: {}){}".format(cor.azul, t('change_os', 'Change operating system'), config.get('sistema_operacional', 'Não configurado'), cor.reset))
         print("{}  = [3] {}{}".format(cor.azul, t('menu.categoria_menu', 'CATEGORY SETTINGS'), cor.reset))
-        print("{}  = [4] {}{}".format(cor.azul, t('menu.banner_settings', 'BANNER SETTINGS'), cor.reset)) um
+        print("{}  = [4] {}{}".format(cor.azul, t('menu.banner_settings', 'BANNER SETTINGS'), cor.reset))
         print("{}  = [5] Configurações de Requisição{}".format(cor.azul, cor.reset))
         print("{}  = [6] Configurar informações do HIT{}".format(cor.azul, cor.reset))
         print("{}  = [7] {}{}".format(cor.azul, t('save_exit', 'Save and exit'), cor.reset))
@@ -1860,7 +1860,7 @@ def main():
             cor.verde,
             t('responses.response'),
             cor.reset
-        )).strip()
+        )))
         if num_bots < 1:
             print("{}{}{}".format(cor.vermelho, t("responses.invalid_number_of_bots"), cor.reset))
             return
