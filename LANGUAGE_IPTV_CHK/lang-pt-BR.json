@@ -1,0 +1,78 @@
+{
+  "translations": {
+    "traduce": {
+      "traduce_json": "@ReyFxck - Thomas.",
+      "traduce_hit": "Script Traduzido por ReyFxck"
+    },
+    "questions": {
+      "yes": "SIM",
+      "no": "NÃO",
+      "select_language": "Selecione um novo idioma:",
+      "confirm_proxy": "Deseja usar arquivos de proxy?",
+      "proxy_type": "Escolha o tipo de proxy de\n  acordo com seu aquivo proxy",
+      "number_of_bots": "Digite o número de bots",
+      "server_host": "Digite o host do servidor\n  E por favor checar se ele\n  está online e funcionando",
+      "select_combo_file": "Escolha o arquivo de combo",
+      "select_proxy_file": "Escolha o arquivo de proxy",
+      "about_combo": "Combo é um arquivo de texto\n  cheio de combinações (user:pass)",
+      "about_proxy": "Proxy é um ip virtual\n  que está hospedado em\n  um país específico",
+      "error_question_proxy": "Escolha inválida.\n  Digite 1 para Sim\n  Digite 2 para Não\n  Tente novamente!",
+      "error_type_proxy": "Escolha está incorreta!\n  Tipo de proxy inválido.",
+    "show_categories": "Deseja mostrar as categorias disponíveis para contas válidas?"
+    },
+    "responses": {
+      "response": "Resposta",
+      "invalid_host": "A Host está inválida!!!\n  Favor tente novamente",
+      "invalid_option": "essa é uma opção inválida!\n  Por favor tente novamente!",
+      "invalid_type_proxy": "Tipo de proxy escolhido inválido\n  Tente novamente mais tarde.",
+      "system_not_suported": "Sistema operacional não suportado!",
+      "creating_folder_combo": "A pasta Combo não existe. Criando...:",
+      "file_not_found": "Nenhum arquivo encontrado na pasta Combo!",
+      "invalid_choice": "Escolha inválida.",
+      "invalid_input": "Entrada inválida.\n  Digite um número.",
+      "error_saving_file": "Erro ao salvar o arquivo:",
+      "invalid_number_of_bots": "Número de bots inválido. Deve ser pelo menos 1.",
+      "invalid_input_number": "Entrada inválida. Digite um número.",
+      "removing_invalid_lines": "Removendo {linhas_invalidas} linhas inválidas.",
+      "no_valid_combo_found": "Nenhum combo válido encontrado no arquivo.",
+      "critical_error": "ERRO CRÍTICO: {e}"
+    },
+    "menu": {
+      "choose_option": "Favor faça uma escolha!",
+      "main_title": "MENU PRINCIPAL",
+      "menu_start": "INICIAR CHECKER SCAN",
+      "settings": "CONFIGURAÇÕES GLOBAIS",
+      "exit_script": "ENCERRAR SCRIPT",
+      "settings_title": "CONFIGURAÇÕES",
+      "change_language": "Alterar idioma",
+      "change_system": "Alterar sistema operacional",
+      "save_and_exit": "Salvar e voltar",
+      "categoria_title": "CONFIGURAÇÃO DE CATEGORIAS",
+      "categoria_estilo": "Configurar estilo",
+      "categoria_menu": "Configurar categorias",
+      "categoria_empilhado": "[EMPILHADO]",
+      "categoria_unido": "[UNIDO]",
+      "exit_info1": "Saindo. Lembre-se: Esta é uma ferramenta educacional",
+      "exit_info2": "Obrigado por usar o script DEEPSEEK IPTV CHECKER PY!",
+      "exit_info3": "Script python feita com fins educativos por @ReyFxck",
+      "exit_info4": "Caso tenha comprado essa script você foi enganado!!!",
+      "exit_message_1": "Obrigado por usar a py, volte sempre! Config by DeepSeek e @ReyFxck"
+    },
+    "checker": {
+      "status": "STATUS",
+      "user": "USER",
+      "password": "PASS",
+      "host": "HOST",
+      "expiration": "EXP",
+      "created_at": "CRIADO",
+      "connections": "CONN",
+      "timezone": "TIMEZONE",
+      "trial": "TESTE",
+      "unlimited_time": "ILIMITADO!",
+      "message": "MESSAGE",
+      "active_connections": "ACT",
+      "max_connections": "MAX",
+      "m3u_link": "Link M3U"
+    }
+  }
+}

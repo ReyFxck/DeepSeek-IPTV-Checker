@@ -1,0 +1,78 @@
+{
+  "translations": {
+    "traduce": {
+      "traduce_json": "TG @Authentic_Hell",
+      "traduce_hit": "Script Translated by Authentic_Hell"
+    },
+    "questions": {
+      "yes": "SIM",
+      "no": "NÃO",
+      "select_language": "Select your language:",
+      "confirm_proxy": "You won't proxy?",
+      "proxy_type": "Select your proxy type\n  accord your proxy in you proxy file",
+      "number_of_bots": "Number of bots",
+      "server_host": "Insert your host\n  Pls, check if your host working",
+      "select_combo_file": "Choice your combo file",
+      "select_proxy_file": "Choice your proxy file",
+      "about_combo": "Combo is a text file\n  with (user:pass)",
+      "about_proxy": "Proxy os a virtual ip\n  located in a\n  specific country",
+      "error_question_proxy": "Inválido Choice.\n  for Yes write 1\n  for Not write 2\n  Try again!",
+      "error_type_proxy": "Invalid Choice!\n  Invalid Proxy Type!",
+      "show_categories": "Do you want to show available categories for valid accounts?"
+    },
+    "responses": {
+      "response": "reply",
+      "invalid_host": "Invalid Host!!!\n  Pls, Try again!!!",
+      "invalid_option": "invalid choice!\n  Pls, try again!",
+      "invalid_type_proxy": "Your proxy choice is invalid\n  Try again later.",
+      "system_not_suported": "Your Operational System is not suportad!!!",
+      "creating_folder_combo": "Folder not found. Creating...:",
+      "file_not_found": "don't have combo found on Folder Combo!",
+      "invalid_choice": "Invalid Choice.",
+      "invalid_input": "Invalid Input.\n  Write a number.",
+      "error_saving_file": "Error to save:",
+      "invalid_number_of_bots": "Invalid minimum bot. Minimum bot accept 1.",
+      "invalid_input_number": "Invalid Input. Write a number.",
+      "removing_invalid_lines": "Deleting {linhas_invalidas} invalid lines.",
+      "no_valid_combo_found": "Valid combo not found.",
+      "critical_error": "FATAL ERROR: {e}"
+    },
+    "menu": {
+      "choose_option": "Give-me your choice!",
+      "main_title": "[ MAIN MENU ]",
+      "menu_start": "SCANNER STARTING",
+      "settings": "GLOBAL CONFIGURATIONS",
+      "exit_script": "SCRIPT EXITING",
+      "settings_title": "CONFIGURATION",
+      "change_language": "Change your language",
+      "change_system": "Change your Operational System",
+      "save_and_exit": "Save and back",
+      "exit_info1": "Backing. Remember: That's a program is for educational porpose",
+      "exit_info2": "Thx for use DEEPSEEK IPTV CHECKER PY!",
+      "exit_info3": "Code developed for educational use by @ReyFxck",
+      "exit_info4": "IF YOU BUY THIS PROGRAM... CONGRATULATIONS, YOU WERE SCAMMED!!!",
+      "exit_message_1": "Thanks for use this py program, come back! Config by DeepSeek e @ReyFxck",
+      "categoria_title": "CATEGORY SETTINGS",
+      "categoria_estilo": "Configure style",
+      "categoria_menu": "Configure categories",
+      "categoria_empilhado": "[STACKED]",
+      "categoria_unido": "[UNITED]"
+    },
+    "checker": {
+      "status": "STATUS",
+      "user": "USER",
+      "password": "PASS",
+      "host": "HOST",
+      "expiration": "EXP",
+      "created_at": "CREATED",
+      "connections": "CONN",
+      "timezone": "TIMEZONE",
+      "trial": "TRIAL",
+      "unlimited_time": "UNLIMITED!",
+      "message": "MESSAGE",
+      "active_connections": "ACT",
+      "max_connections": "MAX",
+      "m3u_link": "M3U Link"
+    }
+  }
+}
